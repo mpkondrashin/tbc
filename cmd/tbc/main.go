@@ -24,8 +24,9 @@ func config() {
 
 func main() {
 	config()
-	url := viper.GetString("url") // "http://127.0.0.1"
-	auth := sms.NewAPIKeyAuthorization("ASDFA")
+	url := viper.GetString("URL")
+	apiKey := viper.GetString("APIKey")
+	auth := sms.NewAPIKeyAuthorization(apiKey)
 	sms := sms.New(url, auth)
 	f, err := sms.GetFilters()
 	if err != nil {
