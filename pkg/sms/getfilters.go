@@ -7,7 +7,7 @@ import (
 )
 
 func (s *SMS) GetFilters() (*string, error) {
-	client := &http.Client{}
+	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

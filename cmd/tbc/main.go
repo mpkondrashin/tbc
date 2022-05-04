@@ -26,8 +26,9 @@ func main() {
 	config()
 	url := viper.GetString("URL")
 	apiKey := viper.GetString("APIKey")
+	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	auth := sms.NewAPIKeyAuthorization(apiKey)
-	sms := sms.New(url, auth)
+	sms := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	f, err := sms.GetFilters()
 	if err != nil {
 		panic(err)
