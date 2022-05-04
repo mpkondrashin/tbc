@@ -9,11 +9,11 @@ import (
 func (s *SMS) GetFilters() (*string, error) {
 	client := s.getClient()
 	// url := s.url + "/ipsProfileMgmt/getFilters"
-	url := fmt.Sprintf("%s%s?profile=%s&filter=%s",
+	url := fmt.Sprintf("%s%s?profile=%s",
 		s.url,
 		"/ipsProfileMgmt/getFilters",
 		"test",
-		"0051",
+		//"0051",
 	)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
