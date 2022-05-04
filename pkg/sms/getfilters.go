@@ -15,7 +15,7 @@ func (s *SMS) GetFilters() (*string, error) {
 		"test",
 		//"0051",
 	)
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
