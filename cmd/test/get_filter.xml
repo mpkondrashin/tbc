@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <getFilters>
+        <profile name="test"/>
+            <filter>
+                <number>7120</number>
+            </filter>
+            <filter>
+                <signature-id>00000001-0001-0001-0001-000000007120</signature-id>
+            </filter>
+            <filter>
+                <policy-id>00000002-0002-0002-0002-000000007120</policy-id>
+            </filter>
+            <filter>
+                <name>7120: TCP: Segment Overlap With Different Data, e.g., Fragroute</name>
+            </filter>
+</getFilters>
