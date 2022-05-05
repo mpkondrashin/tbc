@@ -32,7 +32,7 @@ func main() {
 
 	body := sms.GetFilters{
 		Profile: sms.Profile{Name: "test"},
-		Filter:  []sms.Filter{{Number: 1}},
+		Filter:  []sms.Filter{{Number: 51}},
 	}
 
 	f, err := smsClient.GetFilters(&body)
