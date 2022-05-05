@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
+	"net/textproto"
 )
 
 func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
@@ -24,7 +25,10 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	w, err := writer.CreateFormFile("name", "getFilter.xml")
+	partHeaders := textproto.MIMEHeader{}
+	partHeaders.Set("Content-Type", "application/xml")
+	w, err := writer.CreatePart(partHeaders)
+	//w, err := writer.CreateFormFile("name", "getFilter.xml")
 	//w, err := writer.CreateFormField("xml")
 	if err != nil {
 		return nil, err
