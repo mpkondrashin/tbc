@@ -2,7 +2,6 @@ import requests
 import sys
 
 headers = {
-    'Content-Type': 'application/xml',
     'X-SMS-API-KEY': sys.argv[1],
 }
 
