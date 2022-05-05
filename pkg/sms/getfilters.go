@@ -11,7 +11,6 @@ import (
 func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
-
 	bodyXML, err := xml.Marshal(getFilters)
 
 	if err != nil {
