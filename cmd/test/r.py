@@ -1,6 +1,5 @@
 import requests
 import sys
-import io
 
 headers = {
     'Content-Type': 'application/xml',
@@ -12,12 +11,13 @@ xml='<getFilters><profile name="test"></profile><filter><number>51</number></fil
 print(url)
 print(headers)
 print(xml)
-files = {'BackupFile': io.StringIO(xml)}
-#result = requests.Request('POST', url, files=files, headers=headers)
-result = requests.request('POST', url, files=files, headers=headers, verify=False)
-print(result)
+files = {'file': ('getFilters.xml', xml)}
+result = requests.post(url, files=files, headers=headers, verify=False)
 print("=============")
-print(result.content)
+print(result.text)
+print("=============")
+print(result)
+
 """
 p = result.prepare()
 print(p)
