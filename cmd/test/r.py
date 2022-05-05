@@ -11,6 +11,6 @@ xml='<getFilters><profile name="test"></profile><filter><number>51</number></fil
 print(url)
 print(headers)
 print(xml)
-r = requests.post(url, data=xml, verify=False)
+r = requests.post(url, headers=headers, data=xml, verify=False)
 print(r)
 
