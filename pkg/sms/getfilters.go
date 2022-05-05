@@ -29,12 +29,12 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 		w.Write(bodyXML)
 	*/
 	//body := bytes.Buffer{} bodyXML
-	req, err := http.NewRequest("PUT", url, bytes.NewBuffer([]byte("Somecrap")))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte("Somecrap")))
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	s.auth.Auth(req)
-	//req.Header.Add("Accept", "application/xml")
+	req.Header.Add("Accept", "application/xml")
 	//req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.Header.Add("User-Agent", s.userAgent)
 
