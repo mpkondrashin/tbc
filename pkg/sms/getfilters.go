@@ -24,7 +24,8 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	w, err := writer.CreateFormField("xml")
+	w, err := writer.CreateFormFile("name", "getField.xml")
+	//w, err := writer.CreateFormField("xml")
 	if err != nil {
 		return nil, err
 	}
