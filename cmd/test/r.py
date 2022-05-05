@@ -14,5 +14,9 @@ print(headers)
 print(xml)
 files = {'BackupFile': io.StringIO(xml)}
 result = requests.Request('POST', url, files=files, headers=headers)
-print(result.prepare().body.decode('ascii'))
+print(result)
+p = result.prepare()
+print(p)
+print(p.body)
+print(p.body.decode('ascii'))
 
