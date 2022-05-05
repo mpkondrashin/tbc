@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
@@ -26,6 +27,8 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	s.auth.Auth(req)
 	//req.Header.Add("Accept", "application/xml")
 	req.Header.Add("User-Agent", s.userAgent)
+
+	fmt.Println(formatRequest(req))
 	//req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -48,4 +51,25 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	//}
 	xmlDataStr := string(xmlData)
 	return &xmlDataStr, nil
+}
+
+// formatRequest generates ascii representation of a request
+func formatRequest(r *http.Request) string {
+	var request []string
+	url := fmt.Sprintf("%v %v %v", r.Method, r.URL, r.Proto)
+	request = append(request, url)
+	request = append(request, fmt.Sprintf("Host: %v", r.Host))
+	for name, headers := range r.Header {
+		name = strings.ToLower(name)
+		for _, h := range headers {
+			request = append(request, fmt.Sprintf("%v: %v", name, h))
+		}
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+		request = append(request, "\n")
+		request = append(request, r.Form.Encode())
+	}
+	return strings.Join(request, "\n")
 }
