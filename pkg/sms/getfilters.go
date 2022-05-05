@@ -1,6 +1,8 @@
 package sms
 
 import (
+	"bytes"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -8,14 +10,22 @@ import (
 
 func (s *SMS) GetFilters() (*string, error) {
 	client := s.getClient()
-	// url := s.url + "/ipsProfileMgmt/getFilters"
-	url := fmt.Sprintf("%s%s?profile=%s",
-		s.url,
-		"/ipsProfileMgmt/getFilters",
-		"test",
-		//"0051",
-	)
-	req, err := http.NewRequest("GET", url, nil)
+	url := s.url + "/ipsProfileMgmt/getFilters"
+
+	body := getFilters{
+		Profile: profile{Name: "test"},
+		Filter:  []filter{filter{Name: "a"}},
+	}
+
+	bodyXML, err := xml.Marshal(&body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(bodyXML))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyXML))
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <getFilters>
-        <profile name="test"/>
-            <filter>
-                <number>7120</number>
-            </filter>
+<getFilters>
+    <profile name="test"/>
+        <filter>
+            <number>7120</number>
+        </filter>
 </getFilters>
