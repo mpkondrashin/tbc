@@ -14,9 +14,10 @@ print(headers)
 print(xml)
 files = {'BackupFile': io.StringIO(xml)}
 #result = requests.Request('POST', url, files=files, headers=headers)
-result = requests.request('POST', url, files=files, headers=headers)
+result = requests.request('POST', url, files=files, headers=headers, verify=False)
 print(result)
-
+print("=============")
+print(result.content)
 """
 p = result.prepare()
 print(p)
