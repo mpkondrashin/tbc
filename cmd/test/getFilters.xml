@@ -1,1 +1,1 @@
-<getFilters><profile id="" name="test"></profile><filter><number>0</number><name>a</name><signature-id></signature-id><policy-id></policy-id></filter></getFilters>
+<getFilters><profile name="test"></profile><filter><name>a</name></filter></getFilters>
