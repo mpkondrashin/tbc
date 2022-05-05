@@ -12,5 +12,5 @@ print(url)
 print(headers)
 print(xml)
 r = requests.post(url, data=xml, verify=False)
-print(r.text)
+print(r)
 
