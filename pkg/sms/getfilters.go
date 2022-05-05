@@ -5,7 +5,9 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/http/httputil"
 	"strings"
 )
 
@@ -29,6 +31,14 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	req.Header.Add("User-Agent", s.userAgent)
 
 	fmt.Println(formatRequest(req))
+
+	dump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%q", dump)
+
 	//req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
