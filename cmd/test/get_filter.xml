@@ -1,7 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<getFilters>
-    <profile name="test"/>
-        <filter>
-            <number>7120</number>
-        </filter>
-</getFilters>
+<getFilters><profile id="" name="test"></profile><filter><number>0</number><name>a</name><signature-id></signature-id><policy-id></policy-id></filter></getFilters>
