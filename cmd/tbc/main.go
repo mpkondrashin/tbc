@@ -28,8 +28,14 @@ func main() {
 	apiKey := viper.GetString("APIKey")
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	auth := sms.NewAPIKeyAuthorization(apiKey)
-	sms := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
-	f, err := sms.GetFilters()
+	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
+
+	body := sms.GetFilters{
+		Profile: sms.Profile{Name: "test"},
+		Filter:  []sms.Filter{{Number: 1}},
+	}
+
+	f, err := smsClient.GetFilters(&body)
 	if err != nil {
 		panic(err)
 	}

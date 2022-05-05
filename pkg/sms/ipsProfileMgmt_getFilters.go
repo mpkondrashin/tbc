@@ -1,16 +1,16 @@
 package sms
 
-type getFilters struct {
-	Profile profile  `xml:"profile"`
-	Filter  []filter `xml:"filter"`
+type GetFilters struct {
+	Profile Profile  `xml:"profile"`
+	Filter  []Filter `xml:"filter"`
 }
 
-type profile struct {
+type Profile struct {
 	ID   string `xml:"id,attr,omitempty"`
 	Name string `xml:"name,attr,omitempty"`
 }
 
-type filter struct {
+type Filter struct {
 	Number      uint   `xml:"number,omitempty"`
 	Name        string `xml:"name,omitempty"`
 	SignatureID string `xml:"signature-id,omitempty"`

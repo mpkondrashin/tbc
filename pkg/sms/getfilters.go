@@ -8,16 +8,11 @@ import (
 	"net/http"
 )
 
-func (s *SMS) GetFilters() (*string, error) {
+func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 
-	body := getFilters{
-		Profile: profile{Name: "test"},
-		Filter:  []filter{filter{Name: "a"}},
-	}
-
-	bodyXML, err := xml.Marshal(&body)
+	bodyXML, err := xml.Marshal(getFilters)
 
 	if err != nil {
 		return nil, err
