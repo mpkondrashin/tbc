@@ -12,7 +12,8 @@ var (
 	ErrResponseError = errors.New("response error")
 )
 */
-const defaultUserAgent = "github.com/mpkondrashin/tbcheck/pkg/sms"
+const version = "0.1"
+const defaultUserAgent = "smsClient/" + version
 
 type SMS struct {
 	url                string

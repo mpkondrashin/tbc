@@ -23,13 +23,19 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
+	w, err := writer.CreateFormField("xml")
+	if err != nil {
+		return nil, err
+	}
+	w.Write(bodyXML)
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyXML))
+	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	s.auth.Auth(req)
 	//req.Header.Add("Accept", "application/xml")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.Header.Add("User-Agent", s.userAgent)
 
 	dump, err := httputil.DumpRequestOut(req, true)
