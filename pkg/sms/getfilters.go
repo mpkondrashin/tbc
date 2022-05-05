@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
 )
@@ -14,12 +15,14 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 	bodyXML, err := xml.Marshal(getFilters)
-
 	if err != nil {
 		return nil, err
 	}
 
 	fmt.Println(string(bodyXML))
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyXML))
 	if err != nil {
