@@ -13,6 +13,6 @@ print(url)
 print(headers)
 print(xml)
 files = {'BackupFile': io.StringIO(xml)}
-result = requests.Request('POST', url, files=files, headers=headers, verify=False)
+result = requests.Request('POST', url, files=files, headers=headers)
 print(result.prepare().body.decode('ascii'))
 
