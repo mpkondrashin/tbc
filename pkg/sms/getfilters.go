@@ -13,6 +13,7 @@ import (
 func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
+	fmt.Println("URL:", url)
 	bodyXML, err := xml.Marshal(getFilters)
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	s.auth.Auth(req)
-	req.Header.Add("Accept", "application/xml")
+	req.Header.Add("Accept", "*/*")
 	req.Header.Add("Content-Type", "application/xml")
 	req.Header.Add("User-Agent", s.userAgent)
 
