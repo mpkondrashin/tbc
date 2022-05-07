@@ -39,6 +39,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Result:", f)
 		fmt.Println("Result:", f.Filter.Name, f.Filter.Actionset.Name)
 	}
 	if false {
