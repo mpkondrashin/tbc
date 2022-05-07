@@ -39,5 +39,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(f)
+	fmt.Println("Result:", f)
 }
