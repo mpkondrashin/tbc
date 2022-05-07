@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 )
 
@@ -17,13 +16,14 @@ func (s *SMS) GetActionSet() (*Resultset, error) {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	s.auth.Auth(req)
-	dump, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		panic(err)
-	}
+	/*
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			panic(err)
+		}
 
-	fmt.Printf("Dump: %s\n\n", string(dump))
-
+		fmt.Printf("Dump: %s\n\n", string(dump))
+	*/
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
@@ -53,7 +53,7 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 		return "", err
 	}
 	for _, r := range resultset.Table.Data.R {
-		fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
 		if r.C[1] == actionSetName {
 			return r.C[0], nil
 		}
