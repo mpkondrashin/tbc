@@ -31,7 +31,7 @@ func main() {
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 
 	body := sms.GetFilters{
-		Profile: sms.Profile{Name: "test"},
+		Profile: sms.Profile{Name: "tmcheck"},
 		Filter:  []sms.Filter{{Number: 51}},
 	}
 
