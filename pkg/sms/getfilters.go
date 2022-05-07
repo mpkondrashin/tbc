@@ -27,15 +27,14 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	writer := multipart.NewWriter(body)
 	partHeaders := textproto.MIMEHeader{}
 	partHeaders.Set("Content-Type", "application/xml")
-	w, err := writer.CreatePart(partHeaders)
-	//w, err := writer.CreateFormFile("name", "getFilter.xml")
+	//w, err := writer.CreatePart(partHeaders)
+	w, err := writer.CreateFormFile("name", "getFilter.xml")
 	//w, err := writer.CreateFormField("xml")
 	if err != nil {
 		return nil, err
 	}
-
-	//body := bytes.Buffer{} bodyXML
 	bodyXML = []byte("<getFilters><profile name=\"tbcheck\"/><filter><number>51</number></filter></getFilters>")
+	//body := bytes.Buffer{} bodyXML
 	_, _ = w.Write(bodyXML)
 	req, err := http.NewRequest("POST", url, body)
 
