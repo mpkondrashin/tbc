@@ -14,7 +14,7 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (*string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
-
+	s.auth.Auth(req)
 	dump, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
 		panic(err)
