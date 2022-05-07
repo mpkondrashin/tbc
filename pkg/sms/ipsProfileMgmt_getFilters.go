@@ -48,5 +48,4 @@ type Filters struct {
 		Control string `xml:"control"`
 		Afc     string `xml:"afc"`
 	} `xml:"filter"`
-} 
-
+}

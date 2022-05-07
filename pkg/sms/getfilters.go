@@ -12,7 +12,7 @@ import (
 	"net/textproto"
 )
 
-func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
+func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 	fmt.Println("URL:", url)
@@ -75,6 +75,10 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	//if err != nil {
 	//	return nil, fmt.Errorf("json.Unmarshal: %w: %v\n%s", ErrResponseError, err, string(jsonData))
 	//}
-	xmlDataStr := string(xmlData)
-	return &xmlDataStr, nil
+	var result Filters
+	err = xml.Unmarshal(xmlData, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
