@@ -9,9 +9,7 @@ import (
 	"strings"
 )
 
-func (s *SMS) GetActionSet(actionSetName string) (*Resultset, error) {
-	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
-	fmt.Println("actionSetName", actionSetName)
+func (s *SMS) GetActionSet() (*Resultset, error) {
 	client := s.getClient()
 	url := s.url + "/dbAccess/tptDBServlet?method=DataDictionary&table=ACTIONSET&format=xml"
 	req, err := http.NewRequest("GET", url, nil)
@@ -49,7 +47,8 @@ func (s *SMS) GetActionSet(actionSetName string) (*Resultset, error) {
 }
 
 func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
-	resultset, err := s.GetActionSet(actionSetName)
+	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
+	resultset, err := s.GetActionSet()
 	if err != nil {
 		return "", err
 	}
