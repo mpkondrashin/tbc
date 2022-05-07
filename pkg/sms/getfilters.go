@@ -54,9 +54,8 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s\n\n", string(dump))
+	fmt.Printf("Dump: %s\n\n", string(dump))
 
-	//req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
