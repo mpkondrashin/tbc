@@ -29,19 +29,18 @@ func main() {
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
+	if false {
+		body := sms.GetFilters{
+			Profile: sms.Profile{Name: "tbcheck"},
+			Filter:  []sms.Filter{{Number: 51}},
+		}
 
-	body := sms.GetFilters{
-		Profile: sms.Profile{Name: "tbcheck"},
-		Filter:  []sms.Filter{{Number: 51}},
+		f, err := smsClient.GetFilters(&body)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Result:", f.Filter.Name, f.Filter.Actionset.Name)
 	}
-
-	fmt.Println("smsClient", smsClient)
-	f, err := smsClient.GetFilters(&body)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("smsClient", smsClient)
-	fmt.Println("Result:", f.Filter.Name, f.Filter.Actionset.Name)
 	s, err := smsClient.GetActionSetRefID("Block / Notify")
 	if err != nil {
 		panic(err)
