@@ -23,30 +23,43 @@ type Filter struct {
 // Response
 
 type Filters struct {
-	XMLName xml.Name `xml:"filters"`
-	Text    string   `xml:",chardata"`
-	Profile struct {
+	XMLName                   xml.Name `xml:"filters"`
+	Text                      string   `xml:",chardata"`
+	NoNamespaceSchemaLocation string   `xml:"noNamespaceSchemaLocation,attr"`
+	Xsi                       string   `xml:"xsi,attr"`
+	Profile                   struct {
 		Text    string `xml:",chardata"`
 		Name    string `xml:"name,attr"`
 		ID      string `xml:"id,attr"`
 		Version string `xml:"version,attr"`
 	} `xml:"profile"`
-	Filter struct {
-		Text      string `xml:",chardata"`
-		Name      string `xml:"name"`
-		PolicyID  string `xml:"policy-id"`
-		Version   string `xml:"version"`
-		Locked    string `xml:"locked"`
-		UseParent string `xml:"useParent"`
-		Comment   string `xml:"comment"`
-		Severity  string `xml:"severity"`
-		Enabled   string `xml:"enabled"`
-		Actionset struct {
+	Filter []struct {
+		Text        string `xml:",chardata"`
+		Name        string `xml:"name"`
+		PolicyID    string `xml:"policy-id"`
+		Version     string `xml:"version"`
+		Locked      string `xml:"locked"`
+		UseParent   string `xml:"useParent"`
+		Comment     string `xml:"comment"`
+		Description string `xml:"description"`
+		Severity    string `xml:"severity"`
+		Enabled     string `xml:"enabled"`
+		Actionset   string `xml:"actionset"`
+		Control     string `xml:"control"`
+		Afc         string `xml:"afc"`
+		PolicyGroup struct {
 			Text  string `xml:",chardata"`
 			Refid string `xml:"refid,attr"`
-			Name  string `xml:"name,attr"`
-		} `xml:"actionset"`
-		Control string `xml:"control"`
-		Afc     string `xml:"afc"`
+		} `xml:"policyGroup"`
+		Trigger struct {
+			Text    string `xml:",chardata"`
+			Timeout string `xml:"timeout,attr"`
+		} `xml:"trigger"`
+		Capability []struct {
+			Text      string `xml:",chardata"`
+			Name      string `xml:"name,attr"`
+			Enabled   string `xml:"enabled"`
+			Actionset string `xml:"actionset"`
+		} `xml:"capability"`
 	} `xml:"filter"`
 }

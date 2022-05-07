@@ -1,1 +1,99 @@
-<getFilters><profile name="test"></profile><filter><name>a</name></filter></getFilters>
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+ <xs:simpleType name="uuid">
+   <xs:restriction base="xs:string">
+     <xs:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/>
+   </xs:restriction>
+ </xs:simpleType>
+  <xs:element name="filters">
+    <xs:complexType>
+     <xs:sequence>
+      <xs:element name="profile">
+      <xs:complexType>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="id" type="xs:string"/>
+      <xs:attribute name="version" type="xs:string"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="filter" maxOccurs="unbounded">
+     <xs:complexType>
+      <xs:sequence>
+         <xs:element name="name" type="xs:string"/>
+            <xs:element name="policy-id" type="uuid"/>
+            <xs:element name="version" type="xs:string"/>
+            <xs:element name="locked" type="xs:boolean"/>
+            <xs:element name="useParent" type="xs:boolean"/>
+            <xs:element name="comment" type="xs:string" minOccurs="0"/>
+            <xs:element name="description" type="xs:string" minOccurs="0"/>
+            <xs:element name="severity" minOccurs="0">
+         <xs:simpleType>
+          <xs:restriction base="xs:string">
+               <xs:enumeration value="Low"/>
+             <xs:enumeration value="Minor"/>
+            <xs:enumeration value="Major"/>
+            <xs:enumeration value="Critical"/>
+       </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+      <xs:element name="enabled" type="xs:boolean"/>
+      <xs:element name="actionset" minOccurs="0">
+     <xs:complexType>
+      <xs:attribute name="refid" type="uuid"/>
+      <xs:attribute name="name" type="xs:string"/>
+     </xs:complexType>
+   </xs:element>
+ <xs:element name="control">
+  <xs:simpleType>
+      <xs:restriction base="xs:string">
+      <xs:enumeration value="Category"/>
+      <xs:enumeration value="Filter"/>
+  </xs:restriction>
+ </xs:simpleType>
+</xs:element>
+<xs:element name="afc" type="xs:boolean"/>
+<xs:element name="policyGroup" minOccurs="0">
+  <xs:complexType>
+    <xs:attribute name="refid" type="uuid"/>
+ </xs:complexType>
+</xs:element>
+<xs:element name="trigger" minOccurs="0">
+ <xs:complexType>
+   <xs:attribute name="threshold">
+     <xs:simpleType>
+       <xs:restriction base="xs:integer">
+         <xs:minInclusive value="2"/>
+         <xs:maxInclusive value="10000"/>
+       </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="timeout">
+    <xs:simpleType>
+      <xs:restriction base="xs:long">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="999999"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+ </xs:complexType>
+</xs:element>
+<xs:element name="capability" minOccurs="0" maxOccurs="unbounded">
+ <xs:complexType>
+   <xs:sequence>
+     <xs:element name="enabled" type="xs:boolean"/>
+     <xs:element name="actionset" minOccurs="0">
+       <xs:complexType>
+            <xs:attribute name="refid" type="uuid"/>
+            <xs:attribute name="name" type="xs:string"/>
+       </xs:complexType>
+      </xs:element>
+     </xs:sequence>
+         <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+      </xs:sequence>
+     </xs:complexType>
+    </xs:element>
+   </xs:sequence>
+  </xs:complexType>
+ </xs:element>
+</xs:schema>

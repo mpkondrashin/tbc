@@ -5,10 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
-	"net/http/httputil"
 	"net/textproto"
 )
 
@@ -49,13 +47,14 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	//req.Header.Add("Content-Type", "application/xml")
 	req.Header.Add("User-Agent", s.userAgent)
 
-	dump, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	fmt.Printf("Dump: %s\n\n", string(dump))
-
+		fmt.Printf("Dump: %s\n\n", string(dump))
+	*/
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
@@ -75,7 +74,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	//if err != nil {
 	//	return nil, fmt.Errorf("json.Unmarshal: %w: %v\n%s", ErrResponseError, err, string(jsonData))
 	//}
-	fmt.Println("XML Data", string(xmlData))
+	//fmt.Println("XML Data", string(xmlData))
 	var result Filters
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
