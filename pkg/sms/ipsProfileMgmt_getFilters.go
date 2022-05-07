@@ -1,6 +1,9 @@
 package sms
 
+import "encoding/xml"
+
 type GetFilters struct {
+	XMLName xml.Name `xml:"getFiltes"`
 	Profile Profile  `xml:"profile"`
 	Filter  []Filter `xml:"filter"`
 }
