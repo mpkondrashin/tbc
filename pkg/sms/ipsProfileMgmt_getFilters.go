@@ -38,6 +38,7 @@ type Filters struct {
 		Version   string `xml:"version"`
 		Locked    string `xml:"locked"`
 		UseParent string `xml:"useParent"`
+		Comment   string `xml:"comment"`
 		Severity  string `xml:"severity"`
 		Enabled   string `xml:"enabled"`
 		Actionset struct {
