@@ -3,7 +3,7 @@ package sms
 import "encoding/xml"
 
 type GetFilters struct {
-	XMLName xml.Name `xml:"getFiltes"`
+	XMLName xml.Name `xml:"getFilters"`
 	Profile Profile  `xml:"profile"`
 	Filter  []Filter `xml:"filter"`
 }
