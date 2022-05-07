@@ -75,6 +75,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	//if err != nil {
 	//	return nil, fmt.Errorf("json.Unmarshal: %w: %v\n%s", ErrResponseError, err, string(jsonData))
 	//}
+	fmt.Println("XML Data", string(xmlData))
 	var result Filters
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
