@@ -45,8 +45,8 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	}
 	s.auth.Auth(req)
 	req.Header.Add("Accept", "*/*")
-	//req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.Header.Add("Content-Type", "application/xml")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	//req.Header.Add("Content-Type", "application/xml")
 	req.Header.Add("User-Agent", s.userAgent)
 
 	dump, err := httputil.DumpRequestOut(req, true)
