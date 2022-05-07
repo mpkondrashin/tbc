@@ -40,4 +40,9 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Result:", f.Filter.Name, f.Filter.Actionset.Name)
+	s, err := smsClient.GetActionSetRefID("Block / Notify")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("result", *s)
 }
