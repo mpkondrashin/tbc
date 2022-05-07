@@ -33,7 +33,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	bodyXML = []byte("<getFilters><profile name=\"tbcheck\"/><filter><number>51</number></filter></getFilters>")
+	//bodyXML = []byte("<getFilters><profile name=\"tbcheck\"/><filter><number>51</number></filter></getFilters>")
 	//body := bytes.Buffer{} bodyXML
 	_, _ = w.Write(bodyXML)
 	_ = writer.Close()
