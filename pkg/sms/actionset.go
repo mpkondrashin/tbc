@@ -54,7 +54,7 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 		return "", err
 	}
 	for _, r := range resultset.Table.Data.R {
-		fmt.Printf("compare \"%s\" to \"%s\"", r.C[1], actionSetName)
+		fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
 		if r.C[1] == actionSetName {
 			return r.C[0], nil
 		}
