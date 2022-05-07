@@ -11,6 +11,7 @@ import (
 
 func (s *SMS) GetActionSet(actionSetName string) (*Resultset, error) {
 	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
+	fmt.Println("actionSetName", actionSetName)
 	client := s.getClient()
 	url := s.url + "/dbAccess/tptDBServlet?method=DataDictionary&table=ACTIONSET&format=xml"
 	req, err := http.NewRequest("GET", url, nil)
@@ -57,7 +58,7 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 			return r.C[0], nil
 		}
 	}
-	return "", fmt.Errorf("%s: actionSetName not found", actionSetName)
+	return "", fmt.Errorf("actionSet \"%s\" not found", actionSetName)
 }
 
 type Resultset struct {
