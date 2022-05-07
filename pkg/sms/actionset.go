@@ -1,13 +1,16 @@
 package sms
 
 import (
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 )
 
-func (s *SMS) GetActionSetRefID(actionSetName string) (*string, error) {
+func (s *SMS) GetActionSet(actionSetName string) (*Resultset, error) {
+	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
 	client := s.getClient()
 	url := s.url + "/dbAccess/tptDBServlet?method=DataDictionary&table=ACTIONSET&format=xml"
 	req, err := http.NewRequest("GET", url, nil)
@@ -35,10 +38,27 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (*string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("io.ReadAll: %w", err)
 	}
-	d := string(xmlData)
-	return &d, nil
+
+	var result Resultset
+	err = xml.Unmarshal(xmlData, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
+func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
+	resultset, err := s.GetActionSet(actionSetName)
+	if err != nil {
+		return "", err
+	}
+	for _, r := range resultset.Table.Data.R {
+		if r.C[1] == actionSetName {
+			return r.C[0], nil
+		}
+	}
+	return "", fmt.Errorf("%s: actionSetName not found", actionSetName)
+}
 
 type Resultset struct {
 	XMLName xml.Name `xml:"resultset"`
@@ -59,5 +79,4 @@ type Resultset struct {
 			} `xml:"r"`
 		} `xml:"data"`
 	} `xml:"table"`
-} 
-
+}
