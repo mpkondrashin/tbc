@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 )
 
 func (s *SMS) GetActionSetRefID(actionSetName string) (*string, error) {
@@ -13,6 +14,14 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (*string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
+
+	dump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Dump: %s\n\n", string(dump))
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
