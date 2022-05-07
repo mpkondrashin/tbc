@@ -37,6 +37,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 		//body := bytes.Buffer{} bodyXML
 		req, err := http.NewRequest("POST", url, body)
 	*/
+	bodyXML = []byte("<getFilters><profile name=\"tbcheck\"></profile><filter><name>a</name></filter></getFilters>")
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyXML))
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
