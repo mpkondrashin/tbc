@@ -36,6 +36,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*string, error) {
 	bodyXML = []byte("<getFilters><profile name=\"tbcheck\"/><filter><number>51</number></filter></getFilters>")
 	//body := bytes.Buffer{} bodyXML
 	_, _ = w.Write(bodyXML)
+	_ = writer.Close()
 	req, err := http.NewRequest("POST", url, body)
 
 	//req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyXML))
