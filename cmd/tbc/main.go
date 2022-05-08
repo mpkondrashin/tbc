@@ -98,7 +98,8 @@ func (a *Application) updateFilter(number int, comment string) error {
 func (a *Application) processFilter(number int) error {
 	comment, err := a.getFilterComment(number)
 	if err != nil {
-		return err
+		fmt.Printf("Filter #%d: %v", number, err)
+		return nil
 	}
 	//fmt.Println(comment)
 	if strings.Contains(comment, TBCheckMarker) {
