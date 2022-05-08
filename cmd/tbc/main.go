@@ -62,6 +62,21 @@ func (a *Application) getFilterComment(number int) (string, error) {
 	return f.Filter[0].Comment, nil
 }
 
+func (a *Application) updateFilter(number int, comment string) error {
+	if comment != "" {
+		comment += "\n\n"
+	}
+	body := sms.SetFilters{
+		Profile: sms.Profile{Name: a.profile},
+		Filter: []sms.Filter{{
+			Number:    strconv.Itoa(number),
+			Comment:   comment + TBCheckMarker,
+			Actionset: a.actionsetRefID,
+		}},
+	}
+	return a.smsClient.SetFilters(&body)
+}
+
 func (a *Application) processFilter(number int) error {
 	comment, err := a.getFilterComment(number)
 	if err != nil {
@@ -72,7 +87,8 @@ func (a *Application) processFilter(number int) error {
 		fmt.Println("market found - Skip")
 		return nil
 	}
-	return nil
+	err = a.updateFilter(number, comment)
+	return err
 }
 
 func main() {
