@@ -107,7 +107,8 @@ func (a *Application) processFilter(number int) error {
 	}
 	err = a.updateFilter(number, comment)
 	if err != nil {
-		return fmt.Errorf("processing filter #%d: %w", number, err)
+		fmt.Printf("Filter #%d: %v", number, err)
+		return nil
 	}
 	fmt.Printf("Filter #%d: done\n", number)
 	return nil
