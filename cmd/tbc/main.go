@@ -102,11 +102,15 @@ func (a *Application) processFilter(number int) error {
 	}
 	//fmt.Println(comment)
 	if strings.Contains(comment, TBCheckMarker) {
-		fmt.Printf("\"%s\" marker found - skip\n", TBCheckMarker)
+		fmt.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
 		return nil
 	}
 	err = a.updateFilter(number, comment)
-	return err
+	if err != nil {
+		return fmt.Errorf("processing filter #%d: %w", number, err)
+	}
+	fmt.Printf("Filter #%d: done\n", number)
+	return nil
 }
 
 func main() {
