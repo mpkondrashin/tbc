@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/viper"
 
 	"github.com/mpkondrashin/tbcheck/pkg/sms"
 )
+
+const TBCheckMarker = "#TBC#"
 
 func config() {
 	viper.SetConfigName("tbcheck")
@@ -54,6 +57,10 @@ func (a *Application) processFilter(number int) error {
 		return err
 	}
 	fmt.Println(comment)
+	if strings.Contains(comment, TBCheckMarker) {
+		fmt.Println("market found - Skip")
+		return nil
+	}
 	return nil
 }
 
