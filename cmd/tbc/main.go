@@ -64,7 +64,7 @@ func main() {
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
-	app := NewApplication(smsClient, "tmcheck")
+	app := NewApplication(smsClient, "tbcheck")
 	err := app.processFilter(51)
 	fmt.Printf("Err: %s", err)
 	if false {
