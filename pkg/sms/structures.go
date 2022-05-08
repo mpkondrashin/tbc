@@ -106,3 +106,37 @@ type Resultset struct {
 		} `xml:"data"`
 	} `xml:"table"`
 }
+
+// For Distribute Profile
+
+type SegmentGroup struct {
+	Text string `xml:",chardata"`
+	ID   string `xml:"id,attr"`
+	Name string `xml:"name,attr"`
+}
+
+type VirtualSegment struct {
+	Text string `xml:",chardata"`
+	ID   string `xml:"id"`
+}
+
+type DeviceVirtualSegment struct {
+	Text string `xml:",chardata"`
+	ID   string `xml:"id,attr"`
+	Name string `xml:"name,attr"`
+}
+
+type Device struct {
+	Text           string          `xml:",chardata"`
+	ID             string          `xml:"id"`
+	VirtualSegment *VirtualSegment `xml:"virtualSegment"`
+}
+
+type Distribution struct {
+	XMLName        xml.Name        `xml:"distribution"`
+	Profile        Profile         `xml:"profile"`
+	Priority       string          `xml:"priority"`
+	SegmentGroup   *SegmentGroup   `xml:"segmentGroup,omitempty"`
+	VirtualSegment *VirtualSegment `xml:"virtualSegment"`
+	Device         *Device         `xml:"device"`
+}

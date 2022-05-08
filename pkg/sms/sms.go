@@ -214,3 +214,42 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 	}
 	return "", fmt.Errorf("actionSet \"%s\" not found", actionSetName)
 }
+
+func (s *SMS) DistributeProfile(distribution *Distribution) error {
+	bodyXML, err := xml.Marshal(distribution)
+	if err != nil {
+		return err
+	}
+	fmt.Println("DistributeProfile, bodyXML", string(bodyXML))
+	client := s.getClient()
+	url := s.url + "/ipsProfileMgmt/distributeProfile"
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	partHeaders := textproto.MIMEHeader{}
+	partHeaders.Set("Content-Type", "application/xml")
+	w, err := writer.CreateFormFile("name", "distributeProfile.xml")
+	if err != nil {
+		return err
+	}
+	_, _ = w.Write(bodyXML)
+	_ = writer.Close()
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return fmt.Errorf("http.NewRequest: %w", err)
+	}
+	s.auth.Auth(req)
+	req.Header.Add("Accept", "*/*")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.Header.Add("User-Agent", s.userAgent)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("http.Client.Do: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
+	}
+	return nil
+}
