@@ -55,8 +55,8 @@ type Filter struct {
 	Actionset   string       `xml:"actionset,omitempty"`
 	Control     string       `xml:"control,omitempty"`
 	Afc         string       `xml:"afc,omitempty"`
-	PolicyGroup PolicyGroup  `xml:"policyGroup,omitempty"`
-	Trigger     Trigger      `xml:"trigger"`
+	PolicyGroup *PolicyGroup `xml:"policyGroup,omitempty"`
+	Trigger     *Trigger     `xml:"trigger"`
 	Capability  []Capability `xml:"capability"`
 }
 
