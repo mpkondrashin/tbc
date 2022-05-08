@@ -65,7 +65,7 @@ func (a *Application) GetActionSetRefIDs() error {
 }
 
 func (a *Application) getFilterComment(number int) (string, error) {
-	fmt.Println("actionset", a.actionset, "ref ID: ", a.actionsetRefID)
+	//fmt.Println("actionset", a.actionset, "ref ID: ", a.actionsetRefID)
 	body := sms.GetFilters{
 		Profile: sms.Profile{Name: a.profile},
 		Filter:  []sms.Filter{{Number: strconv.Itoa(number)}},
@@ -74,7 +74,7 @@ func (a *Application) getFilterComment(number int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("Result for comment: ", f)
+	//fmt.Println("Result for comment: ", f)
 	return f.Filter[0].Comment, nil
 }
 
@@ -100,9 +100,9 @@ func (a *Application) processFilter(number int) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(comment)
+	//fmt.Println(comment)
 	if strings.Contains(comment, TBCheckMarker) {
-		fmt.Println("market found - Skip")
+		fmt.Printf("\"%s\" marker found - skip\n", TBCheckMarker)
 		return nil
 	}
 	err = a.updateFilter(number, comment)

@@ -60,7 +60,7 @@ func (s *SMS) getClient() *http.Client {
 func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
-	fmt.Println("URL:", url)
+	//ntln("URL:", url)
 	bodyXML, err := xml.Marshal(getFilters)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func (s *SMS) SetFilters(setFilters *SetFilters) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("bodyXML", string(bodyXML))
+	//fmt.Println("bodyXML", string(bodyXML))
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/setFilters"
 
