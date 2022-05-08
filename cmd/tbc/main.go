@@ -44,6 +44,7 @@ func (a *Application) getFilterComment(number int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("Result for comment: ", f)
 	return f.Filter[0].Comment, nil
 }
 
