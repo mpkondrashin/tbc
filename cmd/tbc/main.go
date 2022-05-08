@@ -69,9 +69,11 @@ func (a *Application) updateFilter(number int, comment string) error {
 	body := sms.SetFilters{
 		Profile: sms.Profile{Name: a.profile},
 		Filter: []sms.Filter{{
-			Number:    strconv.Itoa(number),
-			Comment:   comment + TBCheckMarker,
-			Actionset: a.actionsetRefID,
+			Number:  strconv.Itoa(number),
+			Comment: comment + TBCheckMarker,
+			Actionset: &sms.Actionset{
+				Refid: a.actionsetRefID,
+			},
 		}},
 	}
 	return a.smsClient.SetFilters(&body)

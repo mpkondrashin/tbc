@@ -38,6 +38,11 @@ type Capability struct {
 	Actionset string `xml:"actionset,omitempty"`
 }
 
+type Actionset struct {
+	Refid string `xml:"refid,attr"`
+	Name  string `xml:"name,attr"`
+}
+
 // 052 457 1815
 
 type Filter struct {
@@ -52,7 +57,7 @@ type Filter struct {
 	Description string       `xml:"description,omitempty"`
 	Severity    string       `xml:"severity,omitempty"`
 	Enabled     string       `xml:"enabled,omitempty"`
-	Actionset   string       `xml:"actionset,omitempty"`
+	Actionset   *Actionset   `xml:"actionset,omitempty"`
 	Control     string       `xml:"control,omitempty"`
 	Afc         string       `xml:"afc,omitempty"`
 	PolicyGroup *PolicyGroup `xml:"policyGroup,omitempty"`
