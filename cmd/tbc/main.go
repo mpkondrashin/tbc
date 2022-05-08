@@ -32,7 +32,7 @@ func main() {
 	if true {
 		body := sms.GetFilters{
 			Profile: sms.Profile{Name: "tbcheck"},
-			Filter:  []sms.Filter{{Number: 51}},
+			Filter:  []sms.Filter{{Number: "51"}},
 		}
 
 		f, err := smsClient.GetFilters(&body)
@@ -40,7 +40,20 @@ func main() {
 			panic(err)
 		}
 		fmt.Println("Result:", f)
-		fmt.Println("Result:", f.Filter.Name, f.Filter.Actionset.Name)
+		fmt.Println("Result:", f.Filter[0].Name, f.Filter[0].Actionset)
+	}
+	if true {
+		body := sms.SetFilters{
+			Profile: sms.Profile{Name: "tbcheck"},
+			Filter: []sms.Filter{{
+				Number:  "51",
+				Comment: "#TBC#",
+			}},
+		}
+		err := smsClient.SetFilters(&body)
+		if err != nil {
+			panic(err)
+		}
 	}
 	if false {
 		s, err := smsClient.GetActionSetRefID("Block / Notify")
