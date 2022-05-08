@@ -46,29 +46,3 @@ func (s *SMS) SetFilters(setFilters *SetFilters) error {
 	}
 	return nil
 }
-
-type SetFilters struct {
-	XMLName xml.Name `xml:"setFilters"`
-	Profile struct {
-		Name string `xml:"name,attr"`
-		ID   string `xml:"id,attr"`
-	} `xml:"profile"`
-	Filter []struct {
-		Number    string `xml:"number,omitempty"`
-		Locked    string `xml:"locked,omitempty"`
-		Comment   string `xml:"comment,omitempty"`
-		Control   string `xml:"control,omitempty"`
-		Actionset struct {
-			Name  string `xml:"name,attr"`
-			Refid string `xml:"refid,attr"`
-		} `xml:"actionset"`
-		Enabled   string `xml:"enabled,omitempty"`
-		Afc       string `xml:"afc,omitempty"`
-		UseParent string `xml:"useParent,omitempty"`
-		Trigger   struct {
-			Threshold string `xml:"threshold,attr"`
-			Timeout   string `xml:"timeout,attr"`
-		} `xml:"trigger"`
-		Name string `xml:"name,omitempty"`
-	} `xml:"filter"`
-}
