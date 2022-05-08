@@ -60,8 +60,14 @@ type Filter struct {
 	Capability  []Capability `xml:"capability"`
 }
 
+type Status struct {
+	//XMLName xml.Name `xml:"status"`
+	Text string `xml:",chardata"`
+}
+
 type Filters struct {
 	XMLName                   xml.Name `xml:"filters"`
+	Status                    *Status  `xml:"status"`
 	Text                      string   `xml:",chardata"`
 	NoNamespaceSchemaLocation string   `xml:"noNamespaceSchemaLocation,attr"`
 	Xsi                       string   `xml:"xsi,attr"`

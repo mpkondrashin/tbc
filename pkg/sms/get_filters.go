@@ -62,11 +62,13 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	}
 
 	fmt.Println("Get Filters: ", string(xmlData))
-
 	var result Filters
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
 		return nil, err
+	}
+	if result.Status != nil {
+		return nil, fmt.Errorf("GetFilters: %s", result.Status.Text)
 	}
 	return &result, nil
 }
