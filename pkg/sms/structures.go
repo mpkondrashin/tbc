@@ -84,3 +84,24 @@ type Filters struct {
 	} `xml:"profile"`
 	Filter []Filter `xml:"filter,omitempty"`
 }
+
+type Resultset struct {
+	XMLName xml.Name `xml:"resultset"`
+	Text    string   `xml:",chardata"`
+	Table   struct {
+		Text   string `xml:",chardata"`
+		Name   string `xml:"name,attr"`
+		Column []struct {
+			Text string `xml:",chardata"`
+			Name string `xml:"name,attr"`
+			Type string `xml:"type,attr"`
+		} `xml:"column"`
+		Data struct {
+			Text string `xml:",chardata"`
+			R    []struct {
+				Text string   `xml:",chardata"`
+				C    []string `xml:"c"`
+			} `xml:"r"`
+		} `xml:"data"`
+	} `xml:"table"`
+}
