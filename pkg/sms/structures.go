@@ -39,8 +39,8 @@ type Capability struct {
 }
 
 type Actionset struct {
-	Refid string `xml:"refid,attr"`
-	Name  string `xml:"name,attr"`
+	Refid string `xml:"refid,attr,omitempty"`
+	Name  string `xml:"name,attr,omitempty"`
 }
 
 // 052 457 1815
