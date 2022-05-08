@@ -27,20 +27,31 @@ func config() {
 }
 
 type Application struct {
-	smsClient  *sms.SMS
-	policyName string
+	smsClient      *sms.SMS
+	profile        string
+	actionset      string
+	actionsetRefID string
 }
 
-func NewApplication(smsClient *sms.SMS, policyName string) *Application {
+func NewApplication(smsClient *sms.SMS, profile, actionset string) *Application {
 	return &Application{
-		smsClient:  smsClient,
-		policyName: policyName,
+		smsClient:      smsClient,
+		profile:        profile,
+		actionset:      actionset,
+		actionsetRefID: "unknown",
 	}
 }
 
+func (a *Application) GetActionSetRefIDs() error {
+	var err error
+	a.actionsetRefID, err = a.smsClient.GetActionSetRefID(a.actionset)
+	return err
+}
+
 func (a *Application) getFilterComment(number int) (string, error) {
+	fmt.Println("actionset", a.actionset, "ref ID: ", a.actionsetRefID)
 	body := sms.GetFilters{
-		Profile: sms.Profile{Name: a.policyName},
+		Profile: sms.Profile{Name: a.profile},
 		Filter:  []sms.Filter{{Number: strconv.Itoa(number)}},
 	}
 	f, err := a.smsClient.GetFilters(&body)
@@ -69,10 +80,17 @@ func main() {
 	url := viper.GetString("URL")
 	apiKey := viper.GetString("APIKey")
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
+	profile := viper.GetString("Profile")
+	action := viper.GetString("Action")
+
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
-	app := NewApplication(smsClient, "tbcheck")
-	err := app.processFilter(51)
+	app := NewApplication(smsClient, profile, action)
+	err := app.GetActionSetRefIDs()
+	if err != nil {
+		panic(err)
+	}
+	err = app.processFilter(51)
 	fmt.Printf("Err: %s", err)
 	if false {
 		body := sms.GetFilters{
