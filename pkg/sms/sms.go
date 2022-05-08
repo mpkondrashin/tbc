@@ -117,6 +117,9 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	if result.Status != nil {
 		return nil, fmt.Errorf("GetFilters: %s", result.Status.Text)
 	}
+	if len(result.Filter) > 0 && result.Filter[0].Status != nil {
+		return nil, fmt.Errorf("GetFilters: %s", result.Status.Text)
+	}
 	return &result, nil
 }
 

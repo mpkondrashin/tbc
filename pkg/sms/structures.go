@@ -63,6 +63,7 @@ type Filter struct {
 	PolicyGroup *PolicyGroup `xml:"policyGroup,omitempty"`
 	Trigger     *Trigger     `xml:"trigger"`
 	Capability  []Capability `xml:"capability"`
+	Status      *Status      `xml:"status"`
 }
 
 type Status struct {
@@ -71,12 +72,12 @@ type Status struct {
 }
 
 type Filters struct {
-	XMLName                   xml.Name `xml:"filters"`
-	Status                    *Status  `xml:"status"`
-	Text                      string   `xml:",chardata"`
-	NoNamespaceSchemaLocation string   `xml:"noNamespaceSchemaLocation,attr"`
-	Xsi                       string   `xml:"xsi,attr"`
-	Profile                   struct {
+	XMLName xml.Name `xml:"filters"`
+	Status  *Status  `xml:"status"`
+	//	Text                      string   `xml:",chardata"`
+	//	NoNamespaceSchemaLocation string   `xml:"noNamespaceSchemaLocation,attr"`
+	//Xsi     string `xml:"xsi,attr"`
+	Profile struct {
 		Text    string `xml:",chardata"`
 		Name    string `xml:"name,attr"`
 		ID      string `xml:"id,attr"`
