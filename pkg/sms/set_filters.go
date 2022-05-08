@@ -14,6 +14,7 @@ func (s *SMS) SetFilters(setFilters *SetFilters) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("bodyXML", string(bodyXML))
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/setFilters"
 
