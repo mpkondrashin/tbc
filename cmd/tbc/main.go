@@ -81,7 +81,7 @@ func main() {
 	apiKey := viper.GetString("APIKey")
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	profile := viper.GetString("Profile")
-	action := viper.GetString("Action")
+	action := viper.GetString("Actionset")
 
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
