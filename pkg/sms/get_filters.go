@@ -52,6 +52,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
 	}
 	defer resp.Body.Close()
+	fmt.Println("Response:", resp)
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
 	}
