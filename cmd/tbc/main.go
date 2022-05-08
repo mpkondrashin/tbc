@@ -13,6 +13,11 @@ import (
 
 const TBCheckMarker = "#TBC#"
 
+const (
+	FirstFilterNumber = 1
+	LastFilterNumber  = 600000
+)
+
 func config() {
 	viper.SetConfigName("tbcheck")
 	viper.SetConfigType("yaml")
@@ -40,6 +45,17 @@ func NewApplication(smsClient *sms.SMS, profile, actionset string) *Application 
 		actionset:      actionset,
 		actionsetRefID: "unknown",
 	}
+}
+
+func (a *Application) Run() error {
+	a.GetActionSetRefIDs()
+	for n := FirstFilterNumber; n <= LastFilterNumber; n++ {
+		err := a.processFilter(n)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (a *Application) GetActionSetRefIDs() error {
@@ -104,43 +120,9 @@ func main() {
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	app := NewApplication(smsClient, profile, action)
-	err := app.GetActionSetRefIDs()
+	err := app.Run()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
-	err = app.processFilter(51)
-	fmt.Printf("Err: %s", err)
-	if false {
-		body := sms.GetFilters{
-			Profile: sms.Profile{Name: "tbcheck"},
-			Filter:  []sms.Filter{{Number: "51"}},
-		}
-
-		f, err := smsClient.GetFilters(&body)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Result:", f)
-		fmt.Println("Result:", f.Filter[0].Name, f.Filter[0].Actionset)
-	}
-	if false {
-		body := sms.SetFilters{
-			Profile: sms.Profile{Name: "tbcheck"},
-			Filter: []sms.Filter{{
-				Number:  "51",
-				Comment: "#TBC#",
-			}},
-		}
-		err := smsClient.SetFilters(&body)
-		if err != nil {
-			panic(err)
-		}
-	}
-	if false {
-		s, err := smsClient.GetActionSetRefID("Block / Notify")
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("result", s)
-	}
+	fmt.Println("Done")
 }
