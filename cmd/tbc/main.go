@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/viper"
 
@@ -22,6 +23,39 @@ func config() {
 	}
 }
 
+type Application struct {
+	smsClient  *sms.SMS
+	policyName string
+}
+
+func NewApplication(smsClient *sms.SMS, policyName string) *Application {
+	return &Application{
+		smsClient:  smsClient,
+		policyName: policyName,
+	}
+}
+
+func (a *Application) getFilterComment(number int) (string, error) {
+	body := sms.GetFilters{
+		Profile: sms.Profile{Name: a.policyName},
+		Filter:  []sms.Filter{{Number: strconv.Itoa(number)}},
+	}
+	f, err := a.smsClient.GetFilters(&body)
+	if err != nil {
+		return "", err
+	}
+	return f.Filter[0].Comment, nil
+}
+
+func (a *Application) processFilter(number int) error {
+	comment, err := a.getFilterComment(number)
+	if err != nil {
+		return err
+	}
+	fmt.Println(comment)
+	return nil
+}
+
 func main() {
 	config()
 	url := viper.GetString("URL")
@@ -29,6 +63,9 @@ func main() {
 	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
+	app := NewApplication(smsClient, "tmcheck")
+	err := app.processFilter(51)
+	fmt.Printf("Err: %s", err)
 	if false {
 		body := sms.GetFilters{
 			Profile: sms.Profile{Name: "tbcheck"},
@@ -42,7 +79,7 @@ func main() {
 		fmt.Println("Result:", f)
 		fmt.Println("Result:", f.Filter[0].Name, f.Filter[0].Actionset)
 	}
-	if true {
+	if false {
 		body := sms.SetFilters{
 			Profile: sms.Profile{Name: "tbcheck"},
 			Filter: []sms.Filter{{
