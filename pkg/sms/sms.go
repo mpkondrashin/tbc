@@ -287,7 +287,7 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	if err != nil {
 		return err
 	}
-	if result.SegmentGroup != nil and result.SegmentGroup.Status != nil {
+	if result.SegmentGroup != nil && result.SegmentGroup.Status != nil {
 		return fmt.Errorf("DistributeProfile: %s", result.SegmentGroup.Status.Text)
 	}
 	return nil
