@@ -139,7 +139,6 @@ func (a *Application) distributeProfile(segmentGroup string, priority sms.Distri
 	if err != nil {
 		return err
 	}
-
 	body := sms.Distribution{
 		Profile: sms.Profile{
 			Name: a.profile,
@@ -149,7 +148,7 @@ func (a *Application) distributeProfile(segmentGroup string, priority sms.Distri
 			ID: segmengGroupId,
 		},
 	}
-	err := a.smsClient.DistributeProfile(&body)
+	err = a.smsClient.DistributeProfile(&body)
 	fmt.Println("error:", err)
 	return fmt.Errorf("distributeProfile(%s, %v): %w", segmentGroup, priority, err)
 }
