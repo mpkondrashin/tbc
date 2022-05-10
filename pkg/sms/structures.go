@@ -111,8 +111,8 @@ type Resultset struct {
 
 type SegmentGroup struct {
 	//Text string `xml:",chardata"`
-	ID   string `xml:"id,attr"`
-	Name string `xml:"name,attr"`
+	ID   string `xml:"id,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
 }
 
 type VirtualSegment struct {
