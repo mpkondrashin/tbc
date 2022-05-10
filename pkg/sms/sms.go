@@ -340,7 +340,7 @@ func (s *SMS) GetSegmentGroups() (*Resultset, error) {
 	return s.DataDictionary("ACTIONSET")
 }
 
-func (s *SMS) GetSegmentGroupsId(name string) (string, error) {
+func (s *SMS) GetSegmentGroupId(name string) (string, error) {
 	resultset, err := s.GetSegmentGroups()
 	if err != nil {
 		return "", err
