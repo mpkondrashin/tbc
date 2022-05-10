@@ -135,13 +135,18 @@ func (a *Application) processFilter(number int) error {
 }
 
 func (a *Application) distributeProfile(segmentGroup string, priority sms.DistributionPiority) error {
+	segmengGroupId, err := a.smsClient.GetSegmentGroupId(segmentGroup)
+	if err != nil {
+		return err
+	}
+
 	body := sms.Distribution{
 		Profile: sms.Profile{
 			Name: a.profile,
 		},
 		Priority: priority.String(),
 		SegmentGroup: &sms.SegmentGroup{
-			Name: segmentGroup,
+			ID: segmengGroupId,
 		},
 	}
 	err := a.smsClient.DistributeProfile(&body)

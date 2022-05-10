@@ -164,41 +164,7 @@ func (s *SMS) SetFilters(setFilters *SetFilters) error {
 }
 
 func (s *SMS) GetActionSet() (*Resultset, error) {
-	client := s.getClient()
-	url := s.url + "/dbAccess/tptDBServlet?method=DataDictionary&table=ACTIONSET&format=xml"
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("http.NewRequest: %w", err)
-	}
-	s.auth.Auth(req)
-	/*
-		dump, err := httputil.DumpRequestOut(req, true)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Dump: %s\n\n", string(dump))
-	*/
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("http.Client.Do: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
-	}
-	xmlData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll: %w", err)
-	}
-
-	var result Resultset
-	err = xml.Unmarshal(xmlData, &result)
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
+	return s.DataDictionary("ACTIONSET")
 }
 
 func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
@@ -330,4 +296,61 @@ func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
 		return fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
 	}
 	return nil
+}
+
+func (s *SMS) DataDictionary(table string) (*Resultset, error) {
+	client := s.getClient()
+	url := fmt.Sprintf("%s/dbAccess/tptDBServlet?method=DataDictionary&table=%s&format=xml", s.url, table)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("http.NewRequest: %w", err)
+	}
+	s.auth.Auth(req)
+	/*
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Dump: %s\n\n", string(dump))
+	*/
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("http.Client.Do: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
+	}
+	xmlData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("io.ReadAll: %w", err)
+	}
+
+	var result Resultset
+	err = xml.Unmarshal(xmlData, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (s *SMS) GetSegmentGroups() (*Resultset, error) {
+	return s.DataDictionary("ACTIONSET")
+}
+
+func (s *SMS) GetSegmentGroupsId(name string) (string, error) {
+	resultset, err := s.GetSegmentGroups()
+	if err != nil {
+		return "", err
+	}
+	for _, r := range resultset.Table.Data.R {
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
+		if r.C[1] == name {
+			return r.C[0], nil
+		}
+	}
+	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
+
 }
