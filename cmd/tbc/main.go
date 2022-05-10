@@ -145,7 +145,7 @@ func (a *Application) distributeProfile(segmentGroup string, priority sms.Distri
 		},
 	}
 	err := a.smsClient.DistributeProfile(&body)
-	fmt.Print(err)
+	fmt.Println("error:", err)
 	return fmt.Errorf("distributeProfile(%s, %v): %w", segmentGroup, priority, err)
 }
 
@@ -173,7 +173,10 @@ func main() {
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	app := NewApplication(smsClient, profile, action)
-	app.distributeProfile(distributionSegmentGroup, distributionPriority)
+	err := app.distributeProfile(distributionSegmentGroup, distributionPriority)
+	if err != nil {
+		log.Print(err)
+	}
 	return
 	/*err := app.Run()
 	if err != nil {
