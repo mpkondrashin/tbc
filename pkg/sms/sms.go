@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -244,7 +245,7 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("DistributeProfile, bodyXML", string(bodyXML))
+	log.Println("DistributeProfile() Requst:", string(bodyXML))
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/distributeProfile"
 
@@ -280,7 +281,7 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 		return err //nil, fmt.Errorf("io.ReadAll: %w", err)
 	}
 
-	fmt.Println("Distribution status:", string(xmlData))
+	log.Println("DistributeProfile() Reply:", string(xmlData))
 	var result Distributions
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
