@@ -149,3 +149,20 @@ type Distributions struct { // For reply
 	//VirtualSegment *VirtualSegment `xml:"virtualSegment"`
 	//	Device         *Device         `xml:"device"`
 }
+
+type Resultset struct {
+	XMLName xml.Name `xml:"resultset"`
+	Table   struct {
+		Name   string `xml:"name,attr"`
+		Column []struct {
+			Name string `xml:"name,attr"`
+			Type string `xml:"type,attr"`
+		} `xml:"column"`
+		Data struct {
+			R    []struct {
+				Text string   `xml:",chardata"`
+				C    []string `xml:"c"`
+			} `xml:"r"`
+		} `xml:"data"`
+	} `xml:"table"`
+} 
