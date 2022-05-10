@@ -281,7 +281,7 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	}
 
 	fmt.Println("Distribution status:", string(xmlData))
-	var result Distribution
+	var result Distributions
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
 		return err

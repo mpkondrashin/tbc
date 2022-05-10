@@ -141,3 +141,11 @@ type Distribution struct {
 	VirtualSegment *VirtualSegment `xml:"virtualSegment"`
 	Device         *Device         `xml:"device"`
 }
+
+type Distributions struct { // For reply
+	XMLName xml.Name `xml:"distributions"`
+	//Profile        Profile         `xml:"profile"`
+	SegmentGroup *SegmentGroup `xml:"segmentGroup,omitempty"`
+	//VirtualSegment *VirtualSegment `xml:"virtualSegment"`
+	//	Device         *Device         `xml:"device"`
+}
