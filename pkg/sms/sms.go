@@ -337,7 +337,7 @@ func (s *SMS) DataDictionary(table string) (*Resultset, error) {
 }
 
 func (s *SMS) GetSegmentGroups() (*Resultset, error) {
-	return s.DataDictionary("ACTIONSET")
+	return s.DataDictionary("SEGMENT_GROUP")
 }
 
 func (s *SMS) GetSegmentGroupId(name string) (string, error) {
