@@ -110,24 +110,24 @@ type Resultset struct {
 // For Distribute Profile
 
 type SegmentGroup struct {
-	Text string `xml:",chardata"`
+	//Text string `xml:",chardata"`
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name,attr"`
 }
 
 type VirtualSegment struct {
-	Text string `xml:",chardata"`
-	ID   string `xml:"id"`
+	//Text string `xml:",chardata"`
+	ID string `xml:"id"`
 }
 
 type DeviceVirtualSegment struct {
-	Text string `xml:",chardata"`
+	//Text string `xml:",chardata"`
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name,attr"`
 }
 
 type Device struct {
-	Text           string          `xml:",chardata"`
+	//	Text           string          `xml:",chardata"`
 	ID             string          `xml:"id"`
 	VirtualSegment *VirtualSegment `xml:"virtualSegment"`
 }

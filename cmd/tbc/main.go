@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/spf13/viper"
+	//"github.com/spf13/viper"
 
+	//"github.com/mpkondrashin/tbc/pkg/sms"
 	"github.com/mpkondrashin/tbcheck/pkg/sms"
+	"github.com/spf13/viper"
 )
 
 const TBCheckMarker = "#TBC#"
@@ -32,19 +35,31 @@ func config() {
 }
 
 type Application struct {
-	smsClient      *sms.SMS
-	profile        string
-	actionset      string
-	actionsetRefID string
+	smsClient                *sms.SMS
+	profile                  string
+	actionset                string
+	actionsetRefID           string
+	distributionPriority     sms.DistributionPiority
+	distributionSegmentGroup string
 }
 
 func NewApplication(smsClient *sms.SMS, profile, actionset string) *Application {
 	return &Application{
-		smsClient:      smsClient,
-		profile:        profile,
-		actionset:      actionset,
-		actionsetRefID: "unknown",
+		smsClient:                smsClient,
+		profile:                  profile,
+		actionset:                actionset,
+		actionsetRefID:           "unknown",
+		distributionPriority:     sms.PriorityLow,
+		distributionSegmentGroup: "unknown",
 	}
+}
+
+func (a *Application) ConfigDistribution(
+	distributionSegmentGroup string,
+	distributionPriority sms.DistributionPiority) *Application {
+	a.distributionSegmentGroup = distributionSegmentGroup
+	a.distributionPriority = distributionPriority
+	return a
 }
 
 func (a *Application) Run() error {
@@ -54,6 +69,10 @@ func (a *Application) Run() error {
 		if err != nil {
 			return err
 		}
+	}
+	if a.distributionSegmentGroup == "" {
+		log.Printf("SegmentGroup is missing - skip profile distribution")
+		return nil
 	}
 	return nil
 }
@@ -103,32 +122,59 @@ func (a *Application) processFilter(number int) error {
 	}
 	//fmt.Println(comment)
 	if strings.Contains(comment, TBCheckMarker) {
-		fmt.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
+		log.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
 		return nil
 	}
 	err = a.updateFilter(number, comment)
 	if err != nil {
-		fmt.Printf("Filter #%d: %v\n", number, err)
+		log.Printf("Filter #%d: %v\n", number, err)
 		return nil
 	}
-	fmt.Printf("Filter #%d: done\n", number)
+	log.Printf("Filter #%d: done\n", number)
 	return nil
 }
 
+func (a *Application) distributeProfile(segmentGroup string, priority sms.DistributionPiority) error {
+	body := sms.Distribution{
+		Profile: sms.Profile{
+			Name: a.profile,
+		},
+		Priority: priority.String(),
+		SegmentGroup: &sms.SegmentGroup{
+			Name: segmentGroup,
+		},
+	}
+	err := a.smsClient.DistributeProfile(&body)
+	fmt.Print(err)
+	return fmt.Errorf("distributeProfile(%s, %v): %w", segmentGroup, priority, err)
+}
+
 func main() {
+	log.Print("TBCheck started")
 	config()
-	url := viper.GetString("URL")
-	apiKey := viper.GetString("APIKey")
-	insecureSkipVerify := viper.GetBool("SkipTLSVerify")
+	url := viper.GetString("SMS.URL")
+	apiKey := viper.GetString("SMS.APIKey")
+	insecureSkipVerify := viper.GetBool("SMS.SkipTLSVerify")
 	profile := viper.GetString("Profile")
 	action := viper.GetString("Actionset")
-
+	distributionPriorityString := viper.GetString("Distribution.Priority")
+	distributionSegmentGroup := viper.GetString("Distribution.SegmentGroup")
+	distributionPriority := sms.PriorityLow
+	if distributionPriorityString != "" {
+		var err error
+		distributionPriority, err = sms.DistributionPiorityFromString(distributionPriorityString)
+		if err != nil {
+			panic(err)
+		}
+	}
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	app := NewApplication(smsClient, profile, action)
-	err := app.Run()
+	app.distributeProfile(distributionSegmentGroup, distributionPriority)
+	return
+	/*err := app.Run()
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Done")
+	fmt.Println("Done")*/
 }
