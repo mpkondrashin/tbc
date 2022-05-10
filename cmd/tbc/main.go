@@ -169,6 +169,7 @@ func main() {
 			panic(err)
 		}
 	}
+	log.Printf("distributionSegmentGroup = %s", distributionSegmentGroup)
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	app := NewApplication(smsClient, profile, action)
