@@ -279,7 +279,16 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	if err != nil {
 		return err //nil, fmt.Errorf("io.ReadAll: %w", err)
 	}
-	fmt.Print("Distribution status", string(xmlData))
+
+	//fmt.Print("Distribution status", string(xmlData))
+	var result Distribution
+	err = xml.Unmarshal(xmlData, &result)
+	if err != nil {
+		return err
+	}
+	if result.SegmentGroup.Status != nil {
+		return fmt.Errorf("DistributeProfile: %s", result.SegmentGroup.Status.Text)
+	}
 	return nil
 }
 
