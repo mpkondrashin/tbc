@@ -346,7 +346,7 @@ func (s *SMS) GetSegmentGroupId(name string) (string, error) {
 		return "", err
 	}
 	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
+		fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], name)
 		if r.C[1] == name {
 			return r.C[0], nil
 		}
