@@ -181,28 +181,30 @@ func main() {
 	insecureSkipVerify := viper.GetBool("SMS.SkipTLSVerify")
 	profile := viper.GetString("Profile")
 	action := viper.GetString("Actionset")
-	distributionPriorityString := viper.GetString("Distribution.Priority")
-	distributionSegmentGroup := viper.GetString("Distribution.SegmentGroup")
-	distributionPriority := sms.PriorityLow
-	if distributionPriorityString != "" {
-		var err error
-		distributionPriority, err = sms.DistributionPiorityFromString(distributionPriorityString)
-		if err != nil {
-			panic(err)
+	/*
+		distributionPriorityString := viper.GetString("Distribution.Priority")
+		distributionSegmentGroup := viper.GetString("Distribution.SegmentGroup")
+		distributionPriority := sms.PriorityLow
+		if distributionPriorityString != "" {
+			var err error
+			distributionPriority, err = sms.DistributionPiorityFromString(distributionPriorityString)
+			if err != nil {
+				panic(err)
+			}
 		}
-	}
-	log.Printf("distributionSegmentGroup = %s", distributionSegmentGroup)
+		log.Printf("distributionSegmentGroup = %s", distributionSegmentGroup)
+	*/
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	app := NewApplication(smsClient, profile, action)
-	err := app.distributeProfile(distributionSegmentGroup, distributionPriority)
-	if err != nil {
-		log.Print(err)
-	}
-	return
-	/*err := app.Run()
+	//err := app.distributeProfile(distributionSegmentGroup, distributionPriority)
+	//if err != nil {
+	//	log.Print(err)
+	//}
+	//return
+	err := app.Run()
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("Done")*/
+	log.Println("Done")
 }
