@@ -107,6 +107,7 @@ func (a *Application) updateFilter(number int, filter *sms.Filter) error {
 		Number:  strconv.Itoa(number),
 		Comment: comment + TBCheckMarker,
 	}
+	log.Printf("Number: %d, filter: %v", number, filter)
 	if a.HasBlockingAction(filter.Actionset.Refid) {
 		log.Printf("Filter #%d: Change ActionSet", number)
 		f.Actionset = &sms.Actionset{
