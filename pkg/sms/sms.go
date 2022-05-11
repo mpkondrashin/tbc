@@ -106,24 +106,24 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
 	}
-	if reply != nil {
-		xmlData, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("io.ReadAll: %w", err)
+	xmlData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("io.ReadAll: %w", err)
+	}
+	var status Status
+	err = xml.Unmarshal(xmlData, &status)
+	if err == nil {
+		if status.Text != "" {
+			return fmt.Errorf("Reply: %s", status.Text)
 		}
-		//fmt.Println("Get Filters: ", string(xmlData))
+	}
+	if reply != nil {
 		err = xml.Unmarshal(xmlData, &reply)
 		if err != nil {
 			return err
 		}
-		if result.Status != nil {
-			return nil, fmt.Errorf("GetFilters: %s", result.Status.Text)
-		}
-		if len(result.Filter) > 0 && result.Filter[0].Status != nil {
-			return nil, fmt.Errorf("GetFilters: %s", result.Filter[0].Status.Text)
-		}
 	}
-	return &result, nil
+	return nil
 }
 
 func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
