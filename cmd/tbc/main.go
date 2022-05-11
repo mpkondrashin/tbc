@@ -65,7 +65,7 @@ func (a *Application) Run() (err error) {
 	if err != nil {
 		return
 	}
-	a.actionsetsWithBlock, err = a.smsClient.GetActionSetRefIDsForAction("BLOCK")
+	a.actionsetsWithBlock, err = a.smsClient.GetActionSetRefIDsForAction("DENY")
 	if err != nil {
 		return
 	}
