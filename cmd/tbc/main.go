@@ -70,7 +70,7 @@ func (a *Application) Run() (err error) {
 		return
 	}
 	if len(a.actionsetsWithBlock) == 0 {
-		log.Println("No filters with \"BLOCK\" action found")
+		log.Println("No filters with \"DENY\" action found")
 		return nil
 	}
 	for n := FirstFilterNumber; n <= LastFilterNumber; n++ {
@@ -113,7 +113,8 @@ func (a *Application) updateFilter(number int, filter *sms.Filter) error {
 			Refid: a.actionsetRefID,
 		}
 	} else {
-		log.Printf("Filter #%d: Does not have BLOCK action", number)
+		log.Printf("Filter #%d: Does not have DENY action in its %s ActionSet",
+			number, filter.Actionset.Name)
 	}
 	body := sms.SetFilters{
 		Profile: sms.Profile{Name: a.profile},
