@@ -58,6 +58,74 @@ func (s *SMS) getClient() *http.Client {
 	return &http.Client{}
 }
 
+func (s *SMS) SendRequest(method, url string, request, reply interface{}) error {
+	client := s.getClient()
+	bodyXML, err := xml.Marshal(request)
+	if err != nil {
+		return err
+	}
+	body := &bytes.Buffer{}
+	contentType := "application/xml"
+	if request != nil {
+		writer := multipart.NewWriter(body)
+		contentType = writer.FormDataContentType()
+		partHeaders := textproto.MIMEHeader{}
+		partHeaders.Set("Content-Type", "application/xml")
+		w, err := writer.CreateFormFile("name", "get.xml")
+		if err != nil {
+			return err
+		}
+		_, _ = w.Write(bodyXML)
+		_ = writer.Close()
+	}
+	req, err := http.NewRequest(method, s.url+url, body)
+	if err != nil {
+		return fmt.Errorf("http.NewRequest: %w", err)
+	}
+	s.auth.Auth(req)
+	req.Header.Add("Accept", "*/*")
+	if request != nil {
+		req.Header.Add("Content-Type", contentType)
+	}
+	req.Header.Add("User-Agent", s.userAgent)
+
+	/*
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Dump: %s\n\n", string(dump))
+	*/
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("http.Client.Do: %w", err)
+	}
+	defer resp.Body.Close()
+	//fmt.Println("Response:", resp)
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
+	}
+	if reply != nil {
+		xmlData, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("io.ReadAll: %w", err)
+		}
+		//fmt.Println("Get Filters: ", string(xmlData))
+		err = xml.Unmarshal(xmlData, &reply)
+		if err != nil {
+			return err
+		}
+		if result.Status != nil {
+			return nil, fmt.Errorf("GetFilters: %s", result.Status.Text)
+		}
+		if len(result.Filter) > 0 && result.Filter[0].Status != nil {
+			return nil, fmt.Errorf("GetFilters: %s", result.Filter[0].Status.Text)
+		}
+	}
+	return &result, nil
+}
+
 func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
@@ -182,6 +250,26 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 	return "", fmt.Errorf("actionSet \"%s\" not found", actionSetName)
 }
 
+func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
+	switch action {
+	case "ALLOW", "DENY", "TRUST", "RATE":
+	default:
+		return nil, fmt.Errorf("unknown action \"%s\"", action)
+	}
+	resultset, err := s.GetActionSet()
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, r := range resultset.Table.Data.R {
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], action)
+		if r.C[3] == action {
+			result = append(result, r.C[0])
+		}
+	}
+	return result, nil
+}
+
 type DistributionPiority int
 
 const (
@@ -264,7 +352,7 @@ func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("DistributeProfile, bodyXML", string(bodyXML))
+	log.Println("GetDistribionStatus() Request:", string(bodyXML))
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/distributionStatus"
 
@@ -286,7 +374,6 @@ func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
 	req.Header.Add("Accept", "*/*")
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.Header.Add("User-Agent", s.userAgent)
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("http.Client.Do: %w", err)
@@ -295,6 +382,11 @@ func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
 	}
+	xmlData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err //nil, fmt.Errorf("io.ReadAll: %w", err)
+	}
+	log.Println("GetDistribionStatus() Reply:", string(xmlData))
 	return nil
 }
 
@@ -311,7 +403,6 @@ func (s *SMS) DataDictionary(table string) (*Resultset, error) {
 		if err != nil {
 			panic(err)
 		}
-
 		fmt.Printf("Dump: %s\n\n", string(dump))
 	*/
 	resp, err := client.Do(req)
@@ -319,7 +410,6 @@ func (s *SMS) DataDictionary(table string) (*Resultset, error) {
 		return nil, fmt.Errorf("http.Client.Do: %w", err)
 	}
 	defer resp.Body.Close()
-
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
 	}
@@ -327,7 +417,6 @@ func (s *SMS) DataDictionary(table string) (*Resultset, error) {
 	if err != nil {
 		return nil, fmt.Errorf("io.ReadAll: %w", err)
 	}
-
 	var result Resultset
 	err = xml.Unmarshal(xmlData, &result)
 	if err != nil {
@@ -346,11 +435,10 @@ func (s *SMS) GetSegmentGroupId(name string) (string, error) {
 		return "", err
 	}
 	for _, r := range resultset.Table.Data.R {
-		fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], name)
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], name)
 		if r.C[1] == name {
 			return r.C[0], nil
 		}
 	}
 	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
-
 }

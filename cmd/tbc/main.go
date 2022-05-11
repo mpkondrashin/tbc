@@ -7,9 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	//"github.com/spf13/viper"
-
-	//"github.com/mpkondrashin/tbc/pkg/sms"
 	"github.com/mpkondrashin/tbcheck/pkg/sms"
 	"github.com/spf13/viper"
 )
@@ -39,6 +36,7 @@ type Application struct {
 	profile                  string
 	actionset                string
 	actionsetRefID           string
+	actionsetsWithBlock      []string
 	distributionPriority     sms.DistributionPiority
 	distributionSegmentGroup string
 }
@@ -62,12 +60,23 @@ func (a *Application) ConfigDistribution(
 	return a
 }
 
-func (a *Application) Run() error {
-	a.GetActionSetRefIDs()
+func (a *Application) Run() (err error) {
+	a.actionsetRefID, err = a.smsClient.GetActionSetRefID(a.actionset)
+	if err != nil {
+		return
+	}
+	a.actionsetsWithBlock, err = a.smsClient.GetActionSetRefIDsForAction("BLOCK")
+	if err != nil {
+		return
+	}
+	if len(a.actionsetsWithBlock) == 0 {
+		log.Println("No filters with \"BLOCK\" action found")
+		return nil
+	}
 	for n := FirstFilterNumber; n <= LastFilterNumber; n++ {
-		err := a.processFilter(n)
+		err = a.processFilter(n)
 		if err != nil {
-			return err
+			return
 		}
 	}
 	if a.distributionSegmentGroup == "" {
@@ -77,60 +86,69 @@ func (a *Application) Run() error {
 	return nil
 }
 
-func (a *Application) GetActionSetRefIDs() error {
-	var err error
-	a.actionsetRefID, err = a.smsClient.GetActionSetRefID(a.actionset)
-	return err
-}
-
-func (a *Application) getFilterComment(number int) (string, error) {
-	//fmt.Println("actionset", a.actionset, "ref ID: ", a.actionsetRefID)
+func (a *Application) getFilter(number int) (*sms.Filters, error) {
 	body := sms.GetFilters{
 		Profile: sms.Profile{Name: a.profile},
 		Filter:  []sms.Filter{{Number: strconv.Itoa(number)}},
 	}
-	f, err := a.smsClient.GetFilters(&body)
+	filters, err := a.smsClient.GetFilters(&body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	//fmt.Println("Result for comment: ", f)
-	return f.Filter[0].Comment, nil
+	return filters, nil
 }
 
-func (a *Application) updateFilter(number int, comment string) error {
+func (a *Application) updateFilter(number int, filter *sms.Filter) error {
+	comment := filter.Comment
 	if comment != "" {
 		comment += "\n\n"
 	}
+	f := sms.Filter{
+		Number:  strconv.Itoa(number),
+		Comment: comment + TBCheckMarker,
+	}
+	if a.HasBlockingAction(filter.Actionset.Refid) {
+		log.Printf("Filter #%d: Change ActionSet", number)
+		f.Actionset = &sms.Actionset{
+			Refid: a.actionsetRefID,
+		}
+	} else {
+		log.Printf("Filter #%d: Does not have BLOCK action", number)
+	}
 	body := sms.SetFilters{
 		Profile: sms.Profile{Name: a.profile},
-		Filter: []sms.Filter{{
-			Number:  strconv.Itoa(number),
-			Comment: comment + TBCheckMarker,
-			Actionset: &sms.Actionset{
-				Refid: a.actionsetRefID,
-			},
-		}},
+		Filter:  []sms.Filter{f},
 	}
 	return a.smsClient.SetFilters(&body)
 }
 
+func (a *Application) HasBlockingAction(id string) bool {
+	for _, each := range a.actionsetsWithBlock {
+		if each == id {
+			return true
+		}
+	}
+	return false
+}
+
 func (a *Application) processFilter(number int) error {
-	comment, err := a.getFilterComment(number)
+	filters, err := a.getFilter(number)
 	if err != nil {
 		fmt.Printf("Filter #%d: %v\n", number, err)
 		return nil
 	}
-	//fmt.Println(comment)
+	filter := filters.Filter[0]
+	comment := filter.Comment
 	if strings.Contains(comment, TBCheckMarker) {
 		log.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
 		return nil
 	}
-	err = a.updateFilter(number, comment)
+	err = a.updateFilter(number, &filter)
 	if err != nil {
 		log.Printf("Filter #%d: %v\n", number, err)
 		return nil
 	}
-	log.Printf("Filter #%d: done\n", number)
+	//log.Printf("Filter #%d: done\n", number)
 	return nil
 }
 
@@ -184,7 +202,7 @@ func main() {
 	return
 	/*err := app.Run()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-	fmt.Println("Done")*/
+	log.Println("Done")*/
 }
