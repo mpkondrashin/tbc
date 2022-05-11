@@ -3,8 +3,6 @@
 Version 0.1
 by Mikhail Kondrashin
 
-[![License](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
 
 This utility changes all filters with block action in given profile to specified ActionSet.
 
@@ -22,3 +20,10 @@ Distribution:
   Priority: high #low
   SegmentGroup: <segment group>
 ```
+
+tbc searches for this file in following locations:
+
+1. /etc/tbcheck/
+2. $HOME/.tbcheck
+3. Current folder
+
