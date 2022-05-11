@@ -139,7 +139,7 @@ func (a *Application) HasBlockingAction(id string) bool {
 func (a *Application) processFilter(number int) error {
 	filters, err := a.getFilter(number)
 	if err != nil {
-		fmt.Printf("Filter #%d: %v\n", number, err)
+		log.Printf("Filter #%d: %v\n", number, err)
 		return nil
 	}
 	filter := filters.Filter[0]
