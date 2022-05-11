@@ -204,6 +204,8 @@ func main() {
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	fmt.Println(smsClient.GetActionSet())
+	a, err := smsClient.DataDictionary("CATEGORY")
+	fmt.Println(a)
 	return
 	app := NewApplication(smsClient, profile, action)
 	//err := app.distributeProfile(distributionSegmentGroup, distributionPriority)

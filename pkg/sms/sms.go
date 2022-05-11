@@ -444,3 +444,7 @@ func (s *SMS) GetSegmentGroupId(name string) (string, error) {
 	}
 	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
 }
+
+func (s *SMS) GetCategory() (*Resultset, error) {
+	return s.DataDictionary("CATEGORY")
+}
