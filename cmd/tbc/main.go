@@ -129,6 +129,7 @@ func (a *Application) updateFilter(number int, filter *sms.Filter) error {
 
 func (a *Application) HasBlockingAction(id string) bool {
 	for _, each := range a.actionsetsWithBlock {
+		log.Println("HasBlockingAction", each, "==", id)
 		if each == id {
 			return true
 		}
