@@ -110,6 +110,7 @@ func (a *Application) updateFilter(number int, filter *sms.Filter) error {
 	if filter.Actionset == nil {
 		log.Printf("Filter #%d: Has no ActionSet", number)
 	} else {
+		log.Printf("ActionSet: %v", filter.Actionset)
 		if a.HasBlockingAction(filter.Actionset.Refid) {
 			log.Printf("Filter #%d: Change ActionSet", number)
 			f.Actionset = &sms.Actionset{
