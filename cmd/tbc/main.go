@@ -107,15 +107,18 @@ func (a *Application) updateFilter(number int, filter *sms.Filter) error {
 		Number:  strconv.Itoa(number),
 		Comment: comment + TBCheckMarker,
 	}
-	log.Printf("Number: %d, filter: %v", number, filter)
-	if a.HasBlockingAction(filter.Actionset.Refid) {
-		log.Printf("Filter #%d: Change ActionSet", number)
-		f.Actionset = &sms.Actionset{
-			Refid: a.actionsetRefID,
-		}
+	if filter.Actionset == nil {
+		log.Printf("Filter #%d: Has no ActionSet", number)
 	} else {
-		log.Printf("Filter #%d: Does not have DENY action in its %s ActionSet",
-			number, filter.Actionset.Name)
+		if a.HasBlockingAction(filter.Actionset.Refid) {
+			log.Printf("Filter #%d: Change ActionSet", number)
+			f.Actionset = &sms.Actionset{
+				Refid: a.actionsetRefID,
+			}
+		} else {
+			log.Printf("Filter #%d: Does not have DENY action in its %s ActionSet",
+				number, filter.Actionset.Name)
+		}
 	}
 	body := sms.SetFilters{
 		Profile: sms.Profile{Name: a.profile},
