@@ -14,8 +14,8 @@ import (
 const TBCheckMarker = "#TBC#"
 
 const (
-	FirstFilterNumber = 1
-	LastFilterNumber  = 60000
+	FirstFilterNumber = 27
+	LastFilterNumber  = 100
 )
 
 func config() {

@@ -262,7 +262,7 @@ func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
 	}
 	var result []string
 	for _, r := range resultset.Table.Data.R {
-		fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[2], action)
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[2], action)
 		if r.C[2] == action {
 			result = append(result, r.C[0])
 			log.Printf("ActionSet with %s action: %s", action, r.C[1])
