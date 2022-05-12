@@ -54,6 +54,7 @@ func main() {
 	*/
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
+	smsClient.DataDictionaryAll()
 	fmt.Println(smsClient.GetActionSet())
 	//a, e := smsClient.DataDictionary("CATEGORY")
 	//fmt.Println(e, "CATEGORY ", a)

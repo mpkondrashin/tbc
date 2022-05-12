@@ -118,6 +118,15 @@ func (s *SMS) DataDictionaryX(table string) (result *Resultset, err error) {
 	return
 }
 
+func (s *SMS) DataDictionaryAll() (err error) {
+	url := fmt.Sprintf("/dbAccess/tptDBServlet?method=DataDictionary&format=xml", table)
+	var result interface{}
+	err = s.SendRequest("GET", url, nil, result)
+	fmt.Println("ERR ", err)
+	fmt.Println("RESULT", result)
+	return nil
+}
+
 func (s *SMS) GetSegmentGroups() (*Resultset, error) {
 	return s.DataDictionary("SEGMENT_GROUP")
 }
