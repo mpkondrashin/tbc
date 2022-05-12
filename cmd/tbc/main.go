@@ -13,7 +13,7 @@ const TBCheckMarker = "#TBC2#"
 
 const (
 	FirstFilterNumber = 51
-	LastFilterNumber  = 151
+	LastFilterNumber  = 1500
 )
 
 func config() {
