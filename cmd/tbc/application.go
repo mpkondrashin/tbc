@@ -122,8 +122,8 @@ func (a *Application) processFilter(number int) error {
 		log.Printf("Filter #%d: %v\n", number, err)
 		return nil
 	}
-	fmt.Println("FILTER", filters)
 	filter := filters.Filter[0]
+	fmt.Println("FILTER", filter)
 	comment := filter.Comment
 	if strings.Contains(comment, TBCheckMarker) {
 		log.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
