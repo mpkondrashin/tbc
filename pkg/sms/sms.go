@@ -207,7 +207,7 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 		return fmt.Errorf("SMS: %s", status)
 	}
 	if reply != nil {
-		return xml.Unmarshal(xmlData, &reply)
+		return xml.Unmarshal(xmlData, reply)
 	}
 	return nil
 }
