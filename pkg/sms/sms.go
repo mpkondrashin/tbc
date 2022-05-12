@@ -58,6 +58,90 @@ func (s *SMS) getClient() *http.Client {
 	return &http.Client{}
 }
 
+func (s *SMS) GetFilters(getFilters *GetFilters) (result *Filters, err error) {
+	err = s.SendRequest("POST", "/ipsProfileMgmt/getFilters", getFilters, &result)
+	return
+}
+
+func (s *SMS) SetFiltersX(setFilters *SetFilters) error {
+	return s.SendRequest("POST", "/ipsProfileMgmt/setFilters", setFilters, nil)
+}
+
+func (s *SMS) GetActionSet() (*Resultset, error) {
+	return s.DataDictionary("ACTIONSET")
+}
+
+func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
+	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
+	resultset, err := s.GetActionSet()
+	if err != nil {
+		return "", err
+	}
+	for _, r := range resultset.Table.Data.R {
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
+		if r.C[1] == actionSetName {
+			return r.C[0], nil
+		}
+	}
+	return "", fmt.Errorf("actionSet \"%s\" not found", actionSetName)
+}
+
+func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
+	switch action {
+	case "ALLOW", "DENY", "TRUST", "RATE":
+	default:
+		return nil, fmt.Errorf("unknown action \"%s\"", action)
+	}
+	resultset, err := s.GetActionSet()
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, r := range resultset.Table.Data.R {
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[2], action)
+		log.Printf("ActionSet: %s %s %s %s", r.C[0], r.C[1], r.C[2], r.C[3])
+		if r.C[2] == action {
+			result = append(result, r.C[0])
+			log.Printf("ActionSet with %s action: %s", action, r.C[1])
+		}
+	}
+	return result, nil
+}
+
+func (s *SMS) DistributeProfileX(distribution *Distribution) error {
+	return s.SendRequest("POST", "/ipsProfileMgmt/distributeProfile", distribution, nil)
+}
+
+func (s *SMS) DataDictionaryX(table string) (result *Resultset, err error) {
+	url := fmt.Sprintf("/dbAccess/tptDBServlet?method=DataDictionary&table=%s&format=xml", table)
+	err = s.SendRequest("GET", url, nil, result)
+	return
+}
+
+func (s *SMS) GetSegmentGroups() (*Resultset, error) {
+	return s.DataDictionary("SEGMENT_GROUP")
+}
+
+func (s *SMS) GetSegmentGroupId(name string) (string, error) {
+	resultset, err := s.GetSegmentGroups()
+	if err != nil {
+		return "", err
+	}
+	for _, r := range resultset.Table.Data.R {
+		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], name)
+		if r.C[1] == name {
+			return r.C[0], nil
+		}
+	}
+	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
+}
+
+/*
+func (s *SMS) GetCategory() (*Resultset, error) {
+	return s.DataDictionary("CATEGORY")
+}
+*/
+
 func (s *SMS) SendRequest(method, url string, request, reply interface{}) error {
 	client := s.getClient()
 	bodyXML, err := xml.Marshal(request)
@@ -110,23 +194,32 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 	if err != nil {
 		return fmt.Errorf("io.ReadAll: %w", err)
 	}
-	var status Status
-	err = xml.Unmarshal(xmlData, &status)
-	if err == nil {
-		if status.Text != "" {
-			return fmt.Errorf("Reply: %s", status.Text)
-		}
+	status := SeekForStatus(string(xmlData))
+	if status != "" {
+		return fmt.Errorf("SMS: %s", status)
 	}
 	if reply != nil {
-		err = xml.Unmarshal(xmlData, &reply)
-		if err != nil {
-			return err
-		}
+		return xml.Unmarshal(xmlData, &reply)
 	}
 	return nil
 }
 
-func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
+func SeekForStatus(data string) string {
+	start := strings.Index(data, "<status>")
+	if start == -1 {
+		return ""
+	}
+	end := strings.Index(data, "</status>")
+	if end == -1 {
+		return ""
+	}
+	if end < start {
+		return ""
+	}
+	return data[start+8 : end]
+}
+
+func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 	//ntln("URL:", url)
@@ -231,71 +324,6 @@ func (s *SMS) SetFilters(setFilters *SetFilters) error {
 	return nil
 }
 
-func (s *SMS) GetActionSet() (*Resultset, error) {
-	return s.DataDictionary("ACTIONSET")
-}
-
-func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
-	actionSetName = strings.ReplaceAll(actionSetName, "/", "+")
-	resultset, err := s.GetActionSet()
-	if err != nil {
-		return "", err
-	}
-	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
-		if r.C[1] == actionSetName {
-			return r.C[0], nil
-		}
-	}
-	return "", fmt.Errorf("actionSet \"%s\" not found", actionSetName)
-}
-
-func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
-	switch action {
-	case "ALLOW", "DENY", "TRUST", "RATE":
-	default:
-		return nil, fmt.Errorf("unknown action \"%s\"", action)
-	}
-	resultset, err := s.GetActionSet()
-	if err != nil {
-		return nil, err
-	}
-	var result []string
-	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[2], action)
-		log.Printf("ActionSet: %s %s %s %s", r.C[0], r.C[1], r.C[2], r.C[3])
-		if r.C[2] == action {
-			result = append(result, r.C[0])
-			log.Printf("ActionSet with %s action: %s", action, r.C[1])
-		}
-	}
-	return result, nil
-}
-
-type DistributionPiority int
-
-const (
-	PriorityLow DistributionPiority = iota
-	PriorityHigh
-)
-
-var DistributionPiorityString = []string{"low", "high"}
-
-func (d DistributionPiority) String() string {
-	return DistributionPiorityString[d]
-}
-
-func DistributionPiorityFromString(s string) (DistributionPiority, error) {
-	switch s {
-	case "low":
-		return PriorityLow, nil
-	case "high":
-		return PriorityHigh, nil
-	default:
-		return PriorityLow, fmt.Errorf("Unknown priority \"%s\"", s)
-	}
-}
-
 func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	bodyXML, err := xml.Marshal(distribution)
 	if err != nil {
@@ -349,7 +377,42 @@ func (s *SMS) DistributeProfile(distribution *Distribution) error {
 	return nil
 }
 
-func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
+func (s *SMS) DataDictionary(table string) (*Resultset, error) {
+	client := s.getClient()
+	url := fmt.Sprintf("%s/dbAccess/tptDBServlet?method=DataDictionary&table=%s&format=xml", s.url, table)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("http.NewRequest: %w", err)
+	}
+	s.auth.Auth(req)
+	/*
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Dump: %s\n\n", string(dump))
+	*/
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("http.Client.Do: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
+	}
+	xmlData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("io.ReadAll: %w", err)
+	}
+	var result Resultset
+	err = xml.Unmarshal(xmlData, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (s *SMS) GetDistributionStatus(distribution *Distribution) error {
 	bodyXML, err := xml.Marshal(distribution)
 	if err != nil {
 		return err
@@ -391,62 +454,3 @@ func (s *SMS) GetDistribionStatus(distribution *Distribution) error {
 	log.Println("GetDistribionStatus() Reply:", string(xmlData))
 	return nil
 }
-
-func (s *SMS) DataDictionary(table string) (*Resultset, error) {
-	client := s.getClient()
-	url := fmt.Sprintf("%s/dbAccess/tptDBServlet?method=DataDictionary&table=%s&format=xml", s.url, table)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("http.NewRequest: %w", err)
-	}
-	s.auth.Auth(req)
-	/*
-		dump, err := httputil.DumpRequestOut(req, true)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("Dump: %s\n\n", string(dump))
-	*/
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("http.Client.Do: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("%s: %w", url, ErrByCode(resp.StatusCode))
-	}
-	xmlData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll: %w", err)
-	}
-	var result Resultset
-	err = xml.Unmarshal(xmlData, &result)
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *SMS) GetSegmentGroups() (*Resultset, error) {
-	return s.DataDictionary("SEGMENT_GROUP")
-}
-
-func (s *SMS) GetSegmentGroupId(name string) (string, error) {
-	resultset, err := s.GetSegmentGroups()
-	if err != nil {
-		return "", err
-	}
-	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], name)
-		if r.C[1] == name {
-			return r.C[0], nil
-		}
-	}
-	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
-}
-
-/*
-func (s *SMS) GetCategory() (*Resultset, error) {
-	return s.DataDictionary("CATEGORY")
-}
-*/
