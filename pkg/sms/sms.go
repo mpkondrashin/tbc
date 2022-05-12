@@ -120,7 +120,7 @@ func (s *SMS) DataDictionaryX(table string) (result *Resultset, err error) {
 
 func (s *SMS) DataDictionaryAll() (err error) {
 	var result interface{}
-	err = s.SendRequest("GET", "/dbAccess/tptDBServlet?method=DataDictionary&format=xml", nil, result)
+	err = s.SendRequest("GET", "/dbAccess/tptDBServlet?method=DataDictionary&format=xml", nil, &result)
 	fmt.Println("ERR ", err)
 	fmt.Println("RESULT", result)
 	return nil
