@@ -63,7 +63,7 @@ func (s *SMS) GetFilters(getFilters *GetFilters) (result *Filters, err error) {
 	return
 }
 
-func (s *SMS) SetFiltersX(setFilters *SetFilters) error {
+func (s *SMS) SetFilters(setFilters *SetFilters) error {
 	return s.SendRequest("POST", "/ipsProfileMgmt/setFilters", setFilters, nil)
 }
 
@@ -285,7 +285,7 @@ func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
 	return &result, nil
 }
 
-func (s *SMS) SetFilters(setFilters *SetFilters) error {
+func (s *SMS) SetFilters_(setFilters *SetFilters) error {
 	bodyXML, err := xml.Marshal(setFilters)
 	if err != nil {
 		return err
