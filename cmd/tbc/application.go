@@ -123,7 +123,12 @@ func (a *Application) processFilter(number int) error {
 		return nil
 	}
 	filter := filters.Filter[0]
-	fmt.Println("FILTER ", filter.Actionset.Refid, " AAA ", filter.Actionset.Name)
+	if filter.Actionset != nil {
+		fmt.Println("FILTER ", filter.Actionset.Refid, " AAA ", filter.Actionset.Name)
+	} else {
+		fmt.Println("FILTER ActionSet", filter.Actionset)
+	}
+
 	comment := filter.Comment
 	if strings.Contains(comment, TBCheckMarker) {
 		log.Printf("Filter #%d: \"%s\" marker found - skip\n", number, TBCheckMarker)
