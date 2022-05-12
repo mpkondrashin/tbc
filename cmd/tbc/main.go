@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-const TBCheckMarker = "#TBC#"
+const TBCheckMarker = "#TBC2#"
 
 const (
 	FirstFilterNumber = 51
-	LastFilterNumber  = 51
+	LastFilterNumber  = 151
 )
 
 func config() {
