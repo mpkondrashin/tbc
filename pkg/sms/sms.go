@@ -58,7 +58,7 @@ func (s *SMS) getClient() *http.Client {
 	return &http.Client{}
 }
 
-func (s *SMS) GetFilters(getFilters *GetFilters) (result *Filters, err error) {
+func (s *SMS) GetFiltersX(getFilters *GetFilters) (result *Filters, err error) {
 	err = s.SendRequest("POST", "/ipsProfileMgmt/getFilters", getFilters, &result)
 	return
 }
@@ -227,7 +227,7 @@ func SeekForStatus(data string) string {
 	return data[start+8 : end]
 }
 
-func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
+func (s *SMS) GetFilters(getFilters *GetFilters) (*Filters, error) {
 	client := s.getClient()
 	url := s.url + "/ipsProfileMgmt/getFilters"
 	//ntln("URL:", url)
