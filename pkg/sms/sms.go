@@ -155,15 +155,16 @@ func (s *SMS) DownloadProfile(profileName, filePath string) error {
 		return e(err)
 	}
 	downloadProfileURL := fmt.Sprintf("%s/files/%s.pkg", s.url, filePath)
-	err = DownloadFile(downloadProfileURL, filePath)
+	err = s.DownloadFile(downloadProfileURL, filePath)
 	if err != nil {
 		return e(err)
 	}
 	return nil
 }
 
-func DownloadFile(url string, filePath string) error {
-	resp, err := http.Get(url)
+func (s *SMS) DownloadFile(url string, filePath string) error {
+	client := s.getClient()
+	resp, err := client.Get(url)
 	if err != nil {
 		return err
 	}
