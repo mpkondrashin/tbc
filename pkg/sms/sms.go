@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
+	"os"
 	"strings"
 )
 
@@ -142,6 +143,41 @@ func (s *SMS) GetSegmentGroupId(name string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("SegmentGroup \"%s\" not found", name)
+}
+
+func (s *SMS) DownloadProfile(profileName, filePath string) error {
+	e := func(err error) error {
+		return fmt.Errorf("DownloadProfile(%s, %s): %w", profileName, filePath, err)
+	}
+	exportProfileURL := fmt.Sprintf("/ipsProfileMgmt/exportProfile?exportMethod=SMS&profileName=%s", profileName)
+	err := s.SendRequest("GET", exportProfileURL, nil, nil)
+	if err != nil {
+		return e(err)
+	}
+	downloadProfileURL := fmt.Sprintf("%s/files/%s.pkg", s.url, filePath)
+	err = DownloadFile(downloadProfileURL, filePath)
+	if err != nil {
+		return e(err)
+	}
+	return nil
+}
+
+func DownloadFile(url string, filePath string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 /*

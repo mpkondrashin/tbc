@@ -124,7 +124,7 @@ func (a *Application) processFilter(number int) error {
 	}
 	filter := filters.Filter[0]
 	if filter.Actionset != nil {
-		fmt.Println("FILTER ", filter.Actionset.Refid, " AAA ", filter.Actionset.Name)
+		fmt.Println("FILTER ", number, " - ", filter.Actionset.Refid, " AAA ", filter.Actionset.Name)
 	} else {
 		fmt.Println("FILTER ActionSet", filter.Actionset)
 	}
