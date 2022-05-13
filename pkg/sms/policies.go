@@ -1,3 +1,7 @@
+package sms
+
+import "encoding/xml"
+
 type Policies struct {
 	XMLName xml.Name `xml:"policies"`
 	Text    string   `xml:",chardata"`
@@ -60,5 +64,4 @@ type Policies struct {
 			Name string `xml:"name,attr"`
 		} `xml:"zone"`
 	} `xml:"policy"`
-} 
-
+}
