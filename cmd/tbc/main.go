@@ -68,7 +68,7 @@ func main() {
 	//	log.Print(err)
 	//}
 	//return
-	err := app.Run()
+	err = app.Run()
 	if err != nil {
 		log.Println(err)
 	}
