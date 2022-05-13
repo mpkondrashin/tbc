@@ -54,7 +54,7 @@ func main() {
 	*/
 	auth := sms.NewAPIKeyAuthorization(apiKey)
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
-	err := smsClient.DownloadProfile("tbcheck", "tbcheck_d.pkg")
+	err := smsClient.DownloadProfile("tbcheck2", "tbcheck2_d.pkg")
 	fmt.Println(err)
 	return
 	//smsClient.DataDictionaryAll()
