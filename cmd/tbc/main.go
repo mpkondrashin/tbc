@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-const TBCheckMarker = "#TBC2#"
+const TBCheckMarker = "#TBC#"
 
 const (
 	FirstFilterNumber = 51
-	LastFilterNumber  = 1500
+	LastFilterNumber  = 61
 )
 
 func config() {
@@ -56,7 +56,7 @@ func main() {
 	smsClient := sms.New(url, auth).SetInsecureSkipVerify(insecureSkipVerify)
 	err := smsClient.DownloadProfile("tbcheck2", "tbcheck2_d.pkg")
 	fmt.Println(err)
-	return
+	//return
 	//smsClient.DataDictionaryAll()
 	//fmt.Println(smsClient.GetActionSet())
 	//a, e := smsClient.DataDictionary("CATEGORY")

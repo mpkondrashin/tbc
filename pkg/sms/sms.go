@@ -165,8 +165,7 @@ func (s *SMS) DownloadProfile(profileName, filePath string) error {
 }
 
 func (s *SMS) DownloadFile(url string, filePath string) error {
-	client := s.getClient()
-	resp, err := client.Get(url)
+	resp, err := s.getClient().Get(url)
 	if err != nil {
 		return err
 	}
