@@ -243,7 +243,7 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 	}
 	status := SeekForStatus(string(xmlData))
 	if status != "" {
-		return e(errors.New(status))
+		return errors.New(status)
 	}
 	if reply != nil {
 		err = xml.Unmarshal(xmlData, reply)
