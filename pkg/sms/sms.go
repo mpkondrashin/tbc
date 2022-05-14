@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -155,6 +156,7 @@ func (s *SMS) DownloadProfile(profileName, filePath string) error {
 		return e(err)
 	}
 	downloadProfileURL := fmt.Sprintf("%s/files/%s.pkg", s.url, filePath)
+	fmt.Println(downloadProfileURL)
 	err = s.DownloadFile(downloadProfileURL, filePath)
 	if err != nil {
 		return e(err)
@@ -176,7 +178,6 @@ func (s *SMS) DownloadFile(url string, filePath string) error {
 	}
 	defer out.Close()
 
-	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
 }
@@ -188,10 +189,13 @@ func (s *SMS) GetCategory() (*Resultset, error) {
 */
 
 func (s *SMS) SendRequest(method, url string, request, reply interface{}) error {
+	e := func(err error) error {
+		return fmt.Errorf("SendRequest(%s, %s): %w", method, url, err)
+	}
 	client := s.getClient()
 	bodyXML, err := xml.Marshal(request)
 	if err != nil {
-		return err
+		return e(err)
 	}
 	body := &bytes.Buffer{}
 	contentType := "application/xml"
@@ -202,14 +206,14 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 		partHeaders.Set("Content-Type", "application/xml")
 		w, err := writer.CreateFormFile("name", "get.xml")
 		if err != nil {
-			return err
+			return e(err)
 		}
 		_, _ = w.Write(bodyXML)
 		_ = writer.Close()
 	}
 	req, err := http.NewRequest(method, s.url+url, body)
 	if err != nil {
-		return fmt.Errorf("http.NewRequest: %w", err)
+		return e(err)
 	}
 	s.auth.Auth(req)
 	req.Header.Add("Accept", "*/*")
@@ -217,7 +221,6 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 		req.Header.Add("Content-Type", contentType)
 	}
 	req.Header.Add("User-Agent", s.userAgent)
-
 	/*
 		dump, err := httputil.DumpRequestOut(req, true)
 		if err != nil {
@@ -228,7 +231,7 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 	*/
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("http.Client.Do: %w", err)
+		return e(err)
 	}
 	defer resp.Body.Close()
 	//fmt.Println("Response:", resp)
@@ -237,14 +240,17 @@ func (s *SMS) SendRequest(method, url string, request, reply interface{}) error 
 	}
 	xmlData, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("io.ReadAll: %w", err)
+		return e(err)
 	}
 	status := SeekForStatus(string(xmlData))
 	if status != "" {
-		return fmt.Errorf("SMS: %s", status)
+		return e(errors.New(status))
 	}
 	if reply != nil {
-		return xml.Unmarshal(xmlData, reply)
+		err = xml.Unmarshal(xmlData, reply)
+		if err != nil {
+			return e(err)
+		}
 	}
 	return nil
 }
@@ -272,7 +278,6 @@ func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	partHeaders := textproto.MIMEHeader{}
@@ -281,7 +286,6 @@ func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	_, _ = w.Write(bodyXML)
 	_ = writer.Close()
 	req, err := http.NewRequest("POST", url, body)
@@ -292,7 +296,6 @@ func (s *SMS) GetFilters_(getFilters *GetFilters) (*Filters, error) {
 	req.Header.Add("Accept", "*/*")
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.Header.Add("User-Agent", s.userAgent)
-
 	/*
 		dump, err := httputil.DumpRequestOut(req, true)
 		if err != nil {
