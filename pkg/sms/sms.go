@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+var ErrUnknownAction = errors.New("unknown action")
+
 /*
 
 var (
@@ -80,7 +82,6 @@ func (s *SMS) GetActionSetRefID(actionSetName string) (string, error) {
 		return "", err
 	}
 	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[1], actionSetName)
 		if r.C[1] == actionSetName {
 			return r.C[0], nil
 		}
@@ -92,7 +93,7 @@ func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
 	switch action {
 	case "ALLOW", "DENY", "TRUST", "RATE":
 	default:
-		return nil, fmt.Errorf("unknown action \"%s\"", action)
+		return nil, fmt.Errorf("\"%s\": %w", action, ErrUnknownAction)
 	}
 	resultset, err := s.GetActionSet()
 	if err != nil {
@@ -100,11 +101,10 @@ func (s *SMS) GetActionSetRefIDsForAction(action string) ([]string, error) {
 	}
 	var result []string
 	for _, r := range resultset.Table.Data.R {
-		//fmt.Printf("compare \"%s\" to \"%s\"\n", r.C[2], action)
-		log.Printf("ActionSet: %s %s %s %s", r.C[0], r.C[1], r.C[2], r.C[3])
+		//log.Printf("ActionSet: %s %s %s %s", r.C[0], r.C[1], r.C[2], r.C[3])
 		if r.C[2] == action {
 			result = append(result, r.C[0])
-			log.Printf("ActionSet with %s action: %s", action, r.C[1])
+			//log.Printf("ActionSet with %s action: %s", action, r.C[1])
 		}
 	}
 	return result, nil
@@ -123,9 +123,9 @@ func (s *SMS) DataDictionaryX(table string) (result *Resultset, err error) {
 func (s *SMS) DataDictionaryAll() (err error) {
 	var result interface{}
 	err = s.SendRequest("GET", "/dbAccess/tptDBServlet?method=DataDictionary&format=xml", nil, &result)
-	fmt.Println("ERR ", err)
-	fmt.Println("RESULT", result)
-	return nil
+	//	fmt.Println("ERR ", err)
+	//	fmt.Println("RESULT", result)
+	return
 }
 
 func (s *SMS) GetSegmentGroups() (*Resultset, error) {
@@ -156,7 +156,7 @@ func (s *SMS) DownloadProfile(profileName, filePath string) error {
 		return e(err)
 	}
 	downloadProfileURL := fmt.Sprintf("%s/files/%s.pkg", s.url, filePath)
-	fmt.Println(downloadProfileURL)
+	//fmt.Println(downloadProfileURL)
 	err = s.DownloadFile(downloadProfileURL, filePath)
 	if err != nil {
 		return e(err)

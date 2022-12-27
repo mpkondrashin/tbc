@@ -1,6 +1,11 @@
 package sms
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrUnknownPriority = errors.New("unknown priority")
 
 type DistributionPiority int
 
@@ -22,6 +27,6 @@ func DistributionPiorityFromString(s string) (DistributionPiority, error) {
 	case "high":
 		return PriorityHigh, nil
 	default:
-		return PriorityLow, fmt.Errorf("Unknown priority \"%s\"", s)
+		return PriorityLow, fmt.Errorf("\"%s\": %w", s, ErrUnknownPriority)
 	}
 }
